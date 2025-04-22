@@ -1,3 +1,5 @@
+export const runtime = "nodejs"; // 👈 Forces Node.js runtime, not Edge
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { compare } from "bcrypt";
 import NextAuth from "next-auth";
