@@ -51,6 +51,13 @@ export const { handlers, auth } = NextAuth({
   },
   secret: process.env.NEXT_PUBLIC_AUTH_SECRET,
   callbacks: {
+    async redirect({ url, baseUrl }) {
+      // Allows relative callback URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
+    },
     async signIn({ user, account, profile }) {
       if (account?.provider === "credentials") {
         return true;
@@ -62,9 +69,48 @@ export const { handlers, auth } = NextAuth({
         });
 
         if (existingUser) {
+          // Check if account already exists to avoid duplicates
+          const existingAccount = await prisma.account.findFirst({
+            where: {
+              provider: account.provider,
+              providerAccountId: account.providerAccountId,
+            },
+          });
+
+          if (!existingAccount) {
+            await prisma.account.create({
+              data: {
+                userId: existingUser.id,
+                type: account.type,
+                provider: account.provider,
+                providerAccountId: account.providerAccountId,
+                access_token: account.access_token,
+                expires_at: account.expires_at,
+                token_type: account.token_type,
+                scope: account.scope,
+                id_token: account.id_token,
+              },
+            });
+          }
+          return true;
+        } else {
+          // Create a new user with default values for required fields
+          const newUser = await prisma.user.create({
+            data: {
+              email: profile.email,
+              name: profile.name || "Google User",
+              // Add default values for required fields
+              age: 0, // Integer, not string
+              gender: "not_specified",
+              qualification: "not_specified",
+              course: "not_specified",
+            },
+          });
+
+          // Create the account link
           await prisma.account.create({
             data: {
-              userId: existingUser.id,
+              userId: newUser.id,
               type: account.type,
               provider: account.provider,
               providerAccountId: account.providerAccountId,
@@ -75,6 +121,7 @@ export const { handlers, auth } = NextAuth({
               id_token: account.id_token,
             },
           });
+
           return true;
         }
       }
