@@ -39,7 +39,9 @@ export function AuthForm({ type }: { type: "login" | "register" }) {
         !data.age ||
         !data.gender ||
         !data.qualification ||
-        !data.courseChoice)
+        !data.courseChoice ||
+        !data.email ||
+        !data.password)
     ) {
       setError("All fields are mandatory");
       toast.error("All fields are mandatory");
@@ -55,13 +57,12 @@ export function AuthForm({ type }: { type: "login" | "register" }) {
           email: data.email,
           password: data.password,
           redirect: false,
-          redirectTo: "/dashboard",
         });
 
         if (res?.error) {
           setError(res.error);
-          toast.error("Invalid email or password");
-          console.log(error);
+          toast.error(res.error);
+          console.log(res.error);
         } else {
           toast.success("Login successful");
           router.push("/dashboard");
