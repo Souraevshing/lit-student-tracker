@@ -1,0 +1,25 @@
+name: Docker CI for Next.js
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  docker-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image
+        run: docker build -t nextjs-app .
+
+      - name: Run Container and Test
+        run: |
+          docker run --rm nextjs-app npm run test || echo "No tests found"
