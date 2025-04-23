@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { formatApplicationStatus } from "@/lib/utils/format-status";
 
 type TimelineStep = {
   step: string;
@@ -219,22 +220,11 @@ export default function AdmissionPage() {
     fetchStatus();
   }, []);
 
-  const formatStatus = (status: string): string => {
-    if (!status) return "Pending";
-
-    const lowercaseStatus = status.toLowerCase();
-
-    const formatted = lowercaseStatus.replace(/[_-]/g, " ");
-
-    return formatted
-      .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  };
-
   const formattedStatus = statusData?.status
-    ? formatStatus(statusData.status)
+    ? formatApplicationStatus(statusData.status)
     : "Pending";
+
+  console.log(formattedStatus);
 
   const formatDate = (dateString: string): string => {
     try {
@@ -250,7 +240,7 @@ export default function AdmissionPage() {
       <h1 className="text-3xl font-bold mb-6">Admission Portal</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
+        <Card className="w-full">
           <CardHeader>
             <CardTitle>Register</CardTitle>
           </CardHeader>
@@ -364,6 +354,7 @@ export default function AdmissionPage() {
             </div>
 
             <Button
+              style={{ width: "100% !important" }}
               onClick={handleRegister}
               className="w-full bg-blue-600 hover:bg-blue-700"
               disabled={loading}
@@ -387,13 +378,15 @@ export default function AdmissionPage() {
             <CardContent>
               {statusLoading ? (
                 <div className="flex justify-center items-center py-8">
-                  <LoadingSpinner size="md" /> {/* Updated LoadingSpinner */}
+                  <LoadingSpinner size="md" />
                 </div>
               ) : statusData ? (
                 <div className="space-y-4">
                   <div className="flex items-center">
                     <span className="font-medium mr-2">Status:</span>
-                    <Badge variant="outline">{formattedStatus}</Badge>
+                    <Badge variant="outline">
+                      {formatApplicationStatus(statusData.status)}
+                    </Badge>
                   </div>
 
                   <div className="space-y-2">

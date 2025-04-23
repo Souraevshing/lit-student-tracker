@@ -65,9 +65,11 @@ export default function EditProfilePage() {
           const userData = await response.json();
           setProfile(userData);
 
+          console.log(userData);
+
           setName(userData.name || "");
           setAge(userData.age?.toString() || "");
-          setGender(userData.gender || "");
+          setGender(userData.gender.toUpperCase() || "");
           setQualification(userData.qualification || "");
 
           setError("");
