@@ -18,8 +18,15 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build Docker Image
-        run: docker build -t nextjs-app .
+        run: |
+          docker build \
+            --build-arg STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }} \
+            --build-arg NEXT_PUBLIC_APP_URL=${{ secrets.NEXT_PUBLIC_APP_URL }} \
+            -t nextjs-app .
 
       - name: Run Container and Test
         run: |
-          docker run --rm nextjs-app npm run test || echo "No tests found"
+          docker run --rm \
+            -e STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }} \
+            -e NEXT_PUBLIC_APP_URL=${{ secrets.NEXT_PUBLIC_APP_URL }} \
+            nextjs-app npm run test || echo "No tests found"

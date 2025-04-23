@@ -1,18 +1,19 @@
-# Use official Node.js image
-FROM node:18-alpine
+# Dockerfile
+FROM node:18
 
-# Set working directory
 WORKDIR /app
-
-# Copy package.json and install deps
-COPY package*.json ./
-RUN npm install --force
-
-# Copy all other files
 COPY . .
 
-# Build the Next.js app
+# Accept build args
+ARG STRIPE_SECRET_KEY
+ARG NEXT_PUBLIC_APP_URL
+
+# Set them as ENV variables inside the container
+ENV STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY
+ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
+
+RUN npm install --force
 RUN npm run build
 
-# Expose the default Next.js port
 EXPOSE 3000
+CMD ["npm", "start"]
