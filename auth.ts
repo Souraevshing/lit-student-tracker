@@ -94,10 +94,16 @@ export const { handlers, auth } = NextAuth({
           }
           return true;
         } else {
+          // Create a new user with default values for required fields
           const newUser = await prisma.user.create({
             data: {
               email: profile.email,
               name: profile.name || "Google User",
+              // Add default values for required fields
+              age: 0, // Integer, not string
+              gender: "not_specified",
+              qualification: "not_specified",
+              course: "not_specified",
             },
           });
 
