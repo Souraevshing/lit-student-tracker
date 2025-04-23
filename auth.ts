@@ -12,6 +12,12 @@ export const { handlers, auth } = NextAuth({
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          scope:
+            "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
+        },
+      },
     }),
     Credentials({
       async authorize(credentials: Partial<Record<string, unknown>>) {
@@ -49,8 +55,25 @@ export const { handlers, auth } = NextAuth({
   session: {
     strategy: "jwt",
   },
-  secret: process.env.AUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
+    async jwt({ token, account }) {
+      if (account) {
+        token = Object.assign({}, token, {
+          access_token: account.access_token,
+        });
+        return token;
+      }
+      return null;
+    },
+    async session({ session, token }) {
+      if (session) {
+        session = Object.assign({}, session, {
+          access_token: token.access_token,
+        });
+      }
+      return session;
+    },
     async redirect({ url, baseUrl }) {
       // Allows relative callback URLs
       if (url.startsWith("/")) return `${baseUrl}${url}`;
@@ -95,13 +118,26 @@ export const { handlers, auth } = NextAuth({
           return true;
         } else {
           // Create a new user with default values for required fields
+          const calculateAge = (birthdate: string): number => {
+            const birthDate = new Date(birthdate);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            if (
+              monthDiff < 0 ||
+              (monthDiff === 0 && today.getDate() < birthDate.getDate())
+            ) {
+              age--;
+            }
+            return age;
+          };
+
           const newUser = await prisma.user.create({
             data: {
               email: profile.email,
-              name: profile.name || "Google User",
-              // Add default values for required fields
-              age: 0, // Integer, not string
-              gender: "not_specified",
+              name: profile.name!,
+              age: calculateAge(profile.birthdate!),
+              gender: profile.gender!,
               qualification: "not_specified",
               course: "not_specified",
             },
@@ -126,18 +162,6 @@ export const { handlers, auth } = NextAuth({
         }
       }
       return true;
-    },
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id as string;
-      }
-      return session;
     },
   },
   pages: {
