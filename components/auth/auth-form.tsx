@@ -55,7 +55,7 @@ export function AuthForm({ type }: { type: "login" | "register" }) {
           email: data.email,
           password: data.password,
           redirect: false,
-          callbackUrl: "/dashboard",
+          redirectTo: "/dashboard",
         });
 
         if (res?.error) {

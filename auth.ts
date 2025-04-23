@@ -1,12 +1,11 @@
 export const runtime = "nodejs"; // 👈 Forces Node.js runtime, not Edge
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { prisma } from "@/lib/prisma";
 import { compare } from "bcrypt";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
-
-import { prisma } from "@/lib/prisma";
 
 export const { handlers, auth } = NextAuth({
   providers: [
@@ -15,23 +14,21 @@ export const { handlers, auth } = NextAuth({
       clientSecret: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET!,
     }),
     Credentials({
-      credentials: {
-        email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials: Record<string, string> | undefined, req) {
-        const email = credentials?.email;
-        const password = credentials?.password;
+      async authorize(credentials: Partial<Record<string, unknown>>) {
+        const email = credentials?.email as string;
+        const password = credentials?.password as string;
 
         if (!email || !password) {
           return null;
         }
 
         const user = await prisma.user.findUnique({
-          where: { email },
+          where: {
+            email,
+          },
         });
 
-        if (!user || !user.password) {
+        if (!user || !user?.password) {
           return null;
         }
 

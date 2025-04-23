@@ -1,5 +1,8 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+
 import { CheckCircleIcon, ChevronLeftIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";

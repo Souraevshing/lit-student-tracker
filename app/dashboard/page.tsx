@@ -514,7 +514,8 @@ export default function DashboardPage() {
                         <div>
                           <p className="text-sm text-gray-500">Gender</p>
                           <p className="font-medium">
-                            {userProfile?.gender || "Not provided"}
+                            {userProfile?.gender?.toUpperCase() ||
+                              "Not provided"}
                           </p>
                         </div>
                       </div>
