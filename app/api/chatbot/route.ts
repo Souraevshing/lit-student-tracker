@@ -22,7 +22,7 @@ Be helpful, friendly, and concise. If you don't know something, say so.
 
 Student question: ${lastUserMessage}`;
 
-    if (!process.env.NEXT_PUBLIC_OPENAI_API_KEY) {
+    if (!process.env.OPENAI_API_KEY) {
       console.error("Missing OpenAI API key");
       return NextResponse.json(
         {
@@ -37,7 +37,7 @@ Student question: ${lastUserMessage}`;
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_OPENAI_API_KEY}`,
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
