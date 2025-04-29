@@ -528,6 +528,7 @@ export function Account() {
                               align="start"
                             >
                               <Calendar
+                                captionLayout="dropdown"
                                 mode="single"
                                 selected={field.value}
                                 onSelect={field.onChange}

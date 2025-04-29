@@ -49,13 +49,13 @@ export function LoginForm() {
           loading: (
             <div className="flex items-center gap-2">
               <LoaderIcon className="w-5 h-5 animate-spin text-gray-600" />
-              <span>Registering...</span>
+              <span>Logging in...</span>
             </div>
           ),
           success: (
             <div className="flex items-center gap-2">
               <BadgeCheckIcon className="w-5 h-5 text-green-600" />
-              <span>Registration successful!</span>
+              <span>Login successful!</span>
             </div>
           ),
           error: (err) => (
