@@ -74,3 +74,9 @@ The Quick Links in the dashboard are especially useful for users who:
 - Need to quickly access a particular function without going through the full flow
 
 This dual approach gives users flexibility in how they interact with the admission process!
+
+### ✅ Changes done
+
+- Added validation to the overall app.
+- Bug fixed for showing current user and not stale user.
+- Download id card of student as pdf.

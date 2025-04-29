@@ -2,7 +2,6 @@
 "use client";
 
 import {
-  BookOpenIcon,
   CalendarIcon,
   ClipboardIcon,
   CreditCardIcon,
@@ -13,7 +12,7 @@ import {
   MessageSquareIcon,
   UserIcon,
 } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -27,6 +26,8 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatApplicationStatus } from "@/lib/utils/format-status";
+import { signOut } from "next-auth/react";
+import AccountDetails from "../account-details/page";
 
 type TimelineStep = {
   step: string;
@@ -139,7 +140,7 @@ export default function DashboardPage() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => signOut({ callbackUrl: "/" })}
+              onClick={() => signOut({ redirectTo: "/" })}
               className="text-red-500 hover:text-red-700 hover:bg-red-50 cursor-pointer"
             >
               <LogOutIcon className="w-4 h-4 mr-2" />
@@ -164,17 +165,16 @@ export default function DashboardPage() {
               <ClipboardIcon className="w-4 h-4" />
               <span className="hidden sm:inline">Admission</span>
             </TabsTrigger>
-            <TabsTrigger value="courses" className="flex items-center gap-2">
-              <BookOpenIcon className="w-4 h-4" />
-              <span className="hidden sm:inline">Courses</span>
-            </TabsTrigger>
             <TabsTrigger value="profile" className="flex items-center gap-2">
               <UserIcon className="w-4 h-4" />
               <span className="hidden sm:inline">Profile</span>
             </TabsTrigger>
-            <TabsTrigger value="help" className="flex items-center gap-2">
+            <TabsTrigger
+              value="account-details"
+              className="flex items-center gap-2"
+            >
               <MessageSquareIcon className="w-4 h-4" />
-              <span className="hidden sm:inline">Help</span>
+              <span className="hidden sm:inline">Download ID Card</span>
             </TabsTrigger>
           </TabsList>
 
@@ -424,64 +424,6 @@ export default function DashboardPage() {
             <AdmissionUI />
           </TabsContent>
 
-          <TabsContent value="courses">
-            <Card>
-              <CardHeader>
-                <CardTitle>Available Courses</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Creator Marketer</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-600 mb-4">
-                        Learn how to market yourself as a creator and build your
-                        brand.
-                      </p>
-                      <Badge>12 weeks</Badge>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Creatorpreneur</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-600 mb-4">
-                        Build a sustainable business as a content creator.
-                      </p>
-                      <Badge>16 weeks</Badge>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Next Gen Business</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-600 mb-4">
-                        Learn modern business strategies for the digital age.
-                      </p>
-                      <Badge>10 weeks</Badge>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Electronics Communication</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-600 mb-4">
-                        Master the fundamentals of electronics and communication
-                        systems.
-                      </p>
-                      <Badge>14 weeks</Badge>
-                    </CardContent>
-                  </Card>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
           <TabsContent value="profile">
             <Card>
               <CardHeader>
@@ -564,80 +506,8 @@ export default function DashboardPage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="help">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card className="md:col-span-2">
-                <CardHeader>
-                  <CardTitle>Chat with AI Assistant</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ChatBot status={application?.status || null} />
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>FAQ</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <h3 className="font-medium">
-                      How do I schedule an interview?
-                    </h3>
-                    <p className="text-gray-600 mt-1">
-                      When your application status changes to
-                      &quot;Interview&quot;, you&apos;ll see a button to
-                      schedule your interview on your dashboard.
-                    </p>
-                  </div>
-                  <div>
-                    <h3 className="font-medium">How do I submit my task?</h3>
-                    <p className="text-gray-600 mt-1">
-                      When your application status changes to &quot;Task&quot;,
-                      you&apos;ll see a button to submit your task on your
-                      dashboard.
-                    </p>
-                  </div>
-                  <div>
-                    <h3 className="font-medium">How do I make a payment?</h3>
-                    <p className="text-gray-600 mt-1">
-                      When your application status changes to
-                      &quot;Payment&quot;, you&apos;ll see a button to make your
-                      payment on your dashboard.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Contact Support</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 mb-4">
-                    Need help with something specific? Contact our support team.
-                  </p>
-                  <div className="space-y-2">
-                    <p className="flex items-center">
-                      <span className="font-medium mr-2">Email:</span>
-                      <a
-                        href="mailto:support@litschool.com"
-                        className="text-blue-600 hover:underline"
-                      >
-                        support@litschool.com
-                      </a>
-                    </p>
-                    <p className="flex items-center">
-                      <span className="font-medium mr-2">Phone:</span>
-                      <a
-                        href="tel:+1234567890"
-                        className="text-blue-600 hover:underline"
-                      >
-                        +1 (234) 567-890
-                      </a>
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+          <TabsContent value="account-details">
+            <AccountDetails />
           </TabsContent>
         </Tabs>
       </div>

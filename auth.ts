@@ -1,9 +1,14 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { prisma } from "@/lib/prisma";
-import { compare } from "bcrypt";
+import { compare } from "bcryptjs";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
+import { z } from "zod";
+
+const CredentialsSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+});
 
 export const { handlers, auth } = NextAuth({
   trustHost: true,
@@ -13,13 +18,20 @@ export const { handlers, auth } = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
     Credentials({
-      async authorize(credentials) {
-        const email = credentials?.email as string;
-        const password = credentials?.password as string;
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
 
-        if (!email || !password) {
+      async authorize(credentials) {
+        const parsedData = CredentialsSchema.safeParse(credentials);
+
+        if (parsedData.error) {
           return null;
         }
+
+        const { email, password } = parsedData.data;
 
         const user = await prisma.user.findUnique({
           where: {
@@ -37,11 +49,7 @@ export const { handlers, auth } = NextAuth({
           return null;
         }
 
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-        };
+        return user;
       },
     }),
   ],
@@ -50,7 +58,7 @@ export const { handlers, auth } = NextAuth({
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ account }) {
       if (account?.provider === "credentials") {
         return true;
       }
@@ -64,12 +72,31 @@ export const { handlers, auth } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.image = user.image;
+      }
+
+      const existingUser = await prisma.user.findUnique({
+        where: { id: token.id as string },
+      });
+
+      if (existingUser) {
+        token.email = existingUser.email;
+        token.name = existingUser.name;
       }
       return token;
     },
     async session({ session, token }) {
-      if (token) {
+      if (token && session.user) {
         session.user.id = token.id as string;
+        session.user.email = token.email as string;
+        session.user.name = token.name as string;
+        session.user.image = token.image as string;
+        session.user.emailVerified = token.emailVerified
+          ? new Date(token.emailVerified as string)
+          : null;
+        session.accessToken = token.accessToken as string;
       }
       return session;
     },
@@ -80,5 +107,4 @@ export const { handlers, auth } = NextAuth({
     signOut: "/",
     error: "/login",
   },
-  debug: true,
 });
