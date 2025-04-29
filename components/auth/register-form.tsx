@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BadgeCheckIcon, BanIcon, LoaderIcon, LogInIcon } from "lucide-react";
+import { LogInIcon } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -45,29 +45,7 @@ export function RegisterForm() {
 
           await signOut({ redirect: false });
           router.push("/login");
-        })(),
-        {
-          loading: (
-            <div className="flex items-center gap-2">
-              <LoaderIcon className="w-5 h-5 animate-spin text-gray-600" />
-              <span>Registering...</span>
-            </div>
-          ),
-          success: (
-            <div className="flex items-center gap-2">
-              <BadgeCheckIcon className="w-5 h-5 text-green-600" />
-              <span>Registration successful!</span>
-            </div>
-          ),
-          error: (err) => (
-            <div className="flex items-center gap-2">
-              <BanIcon className="w-5 h-5 text-red-600" />
-              <span>
-                {err instanceof Error ? err.message : "Something went wrong"}
-              </span>
-            </div>
-          ),
-        }
+        })()
       );
     } catch (err) {
       if (err instanceof Error) toast.error(err.message);

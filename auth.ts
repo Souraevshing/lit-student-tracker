@@ -10,7 +10,7 @@ const CredentialsSchema = z.object({
   password: z.string().min(6),
 });
 
-export const { handlers, auth } = NextAuth({
+export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
   providers: [
     Google({

@@ -148,7 +148,9 @@ export default function DashboardPage() {
               variant="secondary"
               size="lg"
               onClick={() => router.push("/account-details")}
-            ></Button>
+            >
+              Download Id Card
+            </Button>
           </div>
         </div>
       </header>
