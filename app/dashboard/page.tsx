@@ -27,6 +27,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatApplicationStatus } from "@/lib/utils/format-status";
 import { signOut } from "next-auth/react";
+import AccountDetails from "../account-details/page";
 
 type TimelineStep = {
   step: string;
@@ -52,7 +53,8 @@ export default function DashboardPage() {
     nextStep: string | null;
   } | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [_activeTab, setActiveTab] = useState("dashboard");
+  const [showTestingPanel, setShowTestingPanel] = useState(false);
+  const [activeTab, setActiveTab] = useState("dashboard");
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -144,11 +146,6 @@ export default function DashboardPage() {
               <LogOutIcon className="w-4 h-4 mr-2" />
               Log Out
             </Button>
-            <Button
-              variant="secondary"
-              size="lg"
-              onClick={() => router.push("/account-details")}
-            ></Button>
           </div>
         </div>
       </header>
@@ -171,6 +168,13 @@ export default function DashboardPage() {
             <TabsTrigger value="profile" className="flex items-center gap-2">
               <UserIcon className="w-4 h-4" />
               <span className="hidden sm:inline">Profile</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="account-details"
+              className="flex items-center gap-2"
+            >
+              <MessageSquareIcon className="w-4 h-4" />
+              <span className="hidden sm:inline">Download ID Card</span>
             </TabsTrigger>
           </TabsList>
 
@@ -500,6 +504,10 @@ export default function DashboardPage() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="account-details">
+            <AccountDetails />
           </TabsContent>
         </Tabs>
       </div>

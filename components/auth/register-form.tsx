@@ -70,7 +70,6 @@ export function RegisterForm() {
         }
       );
     } catch (err) {
-      if (err instanceof Error) toast.error(err.message);
       console.error(err);
     }
   });

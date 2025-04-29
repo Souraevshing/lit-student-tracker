@@ -5,12 +5,10 @@ import { Button } from "@/components/ui/button";
 
 export default function HomePage() {
   return (
-    <div className="h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-black text-center p-4">
+    <div className="h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-white text-center p-4">
       <div className="max-w-3xl">
-        <h1 className="text-4xl font-bold mb-6 text-black">
-          Welcome to LIT School
-        </h1>
-        <p className="mb-8 text-lg text-gray-400 max-w-2xl mx-auto">
+        <h1 className="text-4xl font-bold mb-6">Welcome to LIT School</h1>
+        <p className="mb-8 text-lg text-gray-700 max-w-2xl mx-auto">
           Unlock your creative potential with our specialized courses in Creator
           Marketing, Creatorpreneurship, and Next Gen Business.
         </p>
