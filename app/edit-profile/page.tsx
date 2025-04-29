@@ -1,17 +1,25 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronLeftIcon, UserIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type React from "react";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import {
   Select,
@@ -20,12 +28,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { profileFormSchema } from "@/lib/utils/profile.schema";
+
+type ProfileFormValues = {
+  name: string;
+  age?: string | number | null;
+  gender?: "male" | "female" | "other" | "prefer-not-to-say" | null;
+  qualification?: "other" | "high-school" | "college" | "professional" | null;
+};
 
 interface UserProfile {
   id: string;
   name: string;
   email: string;
-  age: number | null;
+  age?: number | null | undefined;
   gender: string | null;
   qualification: string | null;
   course: string;
@@ -39,10 +55,9 @@ export default function EditProfilePage() {
   const [error, setError] = useState("");
   const [profile, setProfile] = useState<UserProfile | null>(null);
 
-  const [name, setName] = useState("");
-  const [age, setAge] = useState("");
-  const [gender, setGender] = useState("");
-  const [qualification, setQualification] = useState("");
+  const form = useForm<ProfileFormValues>({
+    resolver: zodResolver(profileFormSchema),
+  });
 
   useEffect(() => {
     if (authStatus === "unauthenticated") {
@@ -65,12 +80,13 @@ export default function EditProfilePage() {
           const userData = await response.json();
           setProfile(userData);
 
-          console.log(userData);
-
-          setName(userData.name || "");
-          setAge(userData.age?.toString() || "");
-          setGender(userData.gender.toUpperCase() || "");
-          setQualification(userData.qualification || "");
+          // Set form values
+          form.reset({
+            name: userData.name || "",
+            age: userData.age || undefined,
+            gender: userData.gender?.toLowerCase() || null,
+            qualification: userData.qualification || null,
+          });
 
           setError("");
         } catch (error) {
@@ -86,16 +102,9 @@ export default function EditProfilePage() {
     if (authStatus === "authenticated") {
       fetchUserProfile();
     }
-  }, [session, authStatus]);
+  }, [session, authStatus, form]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!name.trim()) {
-      toast.error("Name is required");
-      return;
-    }
-
+  const onSubmit = async (data: ProfileFormValues) => {
     try {
       setSaving(true);
       const response = await fetch("/api/user/profile", {
@@ -103,12 +112,7 @@ export default function EditProfilePage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          name,
-          age: age ? Number.parseInt(age) : null,
-          gender,
-          qualification,
-        }),
+        body: JSON.stringify(data),
       });
 
       if (!response.ok) {
@@ -167,124 +171,173 @@ export default function EditProfilePage() {
           <CardTitle>Personal Information</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={profile?.email || ""}
-                disabled
-                className="bg-gray-50"
-              />
-              <p className="text-sm text-muted-foreground">
-                Email cannot be changed
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
+                <FormLabel htmlFor="email">Email</FormLabel>
                 <Input
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Enter your full name"
-                  required
+                  id="email"
+                  type="email"
+                  value={profile?.email || ""}
+                  disabled
+                  className="bg-gray-50"
+                />
+                <p className="text-sm text-muted-foreground">
+                  Email cannot be changed
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter your full name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="age"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Age</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="Enter your age"
+                          min="1"
+                          max="120"
+                          {...field}
+                          value={field.value || ""}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            field.onChange(
+                              value === ""
+                                ? undefined
+                                : Number.parseInt(value, 10)
+                            );
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="gender"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Gender</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value || undefined}
+                        value={field.value || undefined}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select gender" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="male">Male</SelectItem>
+                          <SelectItem value="female">Female</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                          <SelectItem value="prefer-not-to-say">
+                            Prefer not to say
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="qualification"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Qualification</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value || undefined}
+                        value={field.value || undefined}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select qualification" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="high-school">
+                            High School Graduate
+                          </SelectItem>
+                          <SelectItem value="college">
+                            College Graduate
+                          </SelectItem>
+                          <SelectItem value="professional">
+                            Working Professional
+                          </SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="age">Age</Label>
+                <FormLabel htmlFor="course">Course</FormLabel>
                 <Input
-                  id="age"
-                  type="number"
-                  value={age}
-                  onChange={(e) => setAge(e.target.value)}
-                  placeholder="Enter your age"
-                  min="1"
-                  max="120"
+                  id="course"
+                  value={profile?.course || ""}
+                  disabled
+                  className="bg-gray-50"
                 />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="gender">Gender</Label>
-                <Select value={gender} onValueChange={setGender}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select gender" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                    <SelectItem value="prefer-not-to-say">
-                      Prefer not to say
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+                <p className="text-sm text-muted-foreground">
+                  Course cannot be changed
+                </p>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="qualification">Qualification</Label>
-                <Select value={qualification} onValueChange={setQualification}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select qualification" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="high-school">
-                      High School Graduate
-                    </SelectItem>
-                    <SelectItem value="college">College Graduate</SelectItem>
-                    <SelectItem value="professional">
-                      Working Professional
-                    </SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="course">Course</Label>
-              <Input
-                id="course"
-                value={profile?.course || ""}
-                disabled
-                className="bg-gray-50"
-              />
-              <p className="text-sm text-muted-foreground">
-                Course cannot be changed
-              </p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2 pt-4">
-              <Link href="/dashboard">
+              <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2 pt-4">
+                <Link href="/dashboard">
+                  <Button
+                    variant="outline"
+                    type="button"
+                    className="w-full sm:w-auto cursor-pointer"
+                  >
+                    Cancel
+                  </Button>
+                </Link>
                 <Button
-                  variant="outline"
-                  type="button"
-                  className="w-full sm:w-auto cursor-pointer"
+                  type="submit"
+                  className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto cursor-pointer"
+                  disabled={saving}
                 >
-                  Cancel
+                  {saving ? (
+                    <>
+                      <LoadingSpinner size="sm" className="mr-2" />
+                      Saving...
+                    </>
+                  ) : (
+                    "Save Changes"
+                  )}
                 </Button>
-              </Link>
-              <Button
-                type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto cursor-pointer"
-                disabled={saving}
-              >
-                {saving ? (
-                  <>
-                    <LoadingSpinner size="sm" className="mr-2" />
-                    Saving...
-                  </>
-                ) : (
-                  "Save Changes"
-                )}
-              </Button>
-            </div>
-          </form>
+              </div>
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>

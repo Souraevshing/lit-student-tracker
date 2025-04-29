@@ -12,6 +12,7 @@ import { Toaster } from "sonner";
 
 import "./globals.css";
 import { Providers } from "./providers/session-provider";
+import { ThemeProvider } from "./providers/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -44,7 +45,7 @@ export default function RootLayout({
             duration={4000}
             gap={8}
             visibleToasts={3}
-            position="top-right"
+            position="top-center"
             hotkey={["escape", "esc"]}
             style={{
               animationDuration: "0.35s",
@@ -82,7 +83,14 @@ export default function RootLayout({
             }}
             theme="system"
           />
-          {children}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
         </Providers>
       </body>
     </html>

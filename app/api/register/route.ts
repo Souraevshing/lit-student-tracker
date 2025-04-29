@@ -1,28 +1,24 @@
 import { prisma } from "@/lib/prisma";
+import { registerSchema } from "@/lib/utils/auth/register.schema";
 
-import { hash } from "bcrypt";
+import { hash } from "bcryptjs";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email, password, name, age, gender, qualification, courseChoice } =
-      body;
 
-    if (
-      !email ||
-      !password ||
-      !name ||
-      !age ||
-      !gender ||
-      !qualification ||
-      !courseChoice
-    ) {
+    const bodyParsed = registerSchema.safeParse(body);
+
+    if (!bodyParsed.success) {
       return NextResponse.json(
-        { message: "All fields are required" },
+        { message: "Invalid input", errors: bodyParsed.error.flatten() },
         { status: 400 }
       );
     }
+
+    const { email, password, name, age, gender, qualification, courseChoice } =
+      bodyParsed.data;
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
