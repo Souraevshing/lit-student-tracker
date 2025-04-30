@@ -67,22 +67,8 @@ export function Account() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { setTheme } = useTheme();
 
-  const defaultValues: Partial<AccountFormValues> = {
-    fullName: "",
-    email: "",
-    contact: "",
-    institute: "",
-    dob: new Date(),
-    gender: "",
-    bloodGroup: "",
-    linkedin: "",
-    instagram: "",
-    profileImage: profileImage,
-  };
-
   const form = useForm<AccountFormValues>({
     resolver: zodResolver(accountFormSchema),
-    defaultValues,
     mode: "onChange",
   });
 
@@ -675,7 +661,7 @@ export function Account() {
                     type="button"
                     variant="outline"
                     className="bg-zinc-800 border-zinc-700 hover:bg-zinc-700 text-white"
-                    onClick={() => form.reset(defaultValues)}
+                    onClick={() => form.reset()}
                   >
                     Cancel
                   </Button>

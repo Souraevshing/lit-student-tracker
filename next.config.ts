@@ -2,11 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  experimental: {
-    serverActions: {
-      allowedOrigins: ["https://lit-student-tracker.netlify.app"],
-    },
-  },
   async headers() {
     return [
       {

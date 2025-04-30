@@ -10,12 +10,12 @@ const CredentialsSchema = z.object({
   password: z.string().min(6),
 });
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const { handlers, auth } = NextAuth({
   trustHost: true,
   providers: [
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
     Credentials({
       name: "Credentials",
@@ -56,7 +56,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: {
     strategy: "jwt",
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET!,
   callbacks: {
     async signIn({ account }) {
       if (account?.provider === "credentials") {
@@ -107,4 +107,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signOut: "/",
     error: "/login",
   },
+  debug: true,
 });
