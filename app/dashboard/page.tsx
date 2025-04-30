@@ -165,20 +165,28 @@ export default function DashboardPage() {
           className="w-full"
           onValueChange={setActiveTab}
         >
-          <TabsList className="mb-6 w-fit">
-            <TabsTrigger value="dashboard" className="flex items-center gap-2">
-              <HomeIcon className="w-4 h-4" />
-              <span className="hidden sm:inline">Dashboard</span>
-            </TabsTrigger>
-            <TabsTrigger value="admission" className="flex items-center gap-2">
-              <ClipboardIcon className="w-4 h-4" />
-              <span className="hidden sm:inline">Admission</span>
-            </TabsTrigger>
-            <TabsTrigger value="profile" className="flex items-center gap-2">
-              <UserIcon className="w-4 h-4" />
-              <span className="hidden sm:inline">Profile</span>
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex justify-center w-full">
+            <TabsList className="mb-6">
+              <TabsTrigger
+                value="dashboard"
+                className="flex items-center gap-2"
+              >
+                <HomeIcon className="w-4 h-4" />
+                <span className="hidden sm:inline">Dashboard</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="admission"
+                className="flex items-center gap-2"
+              >
+                <ClipboardIcon className="w-4 h-4" />
+                <span className="hidden sm:inline">Admission</span>
+              </TabsTrigger>
+              <TabsTrigger value="profile" className="flex items-center gap-2">
+                <UserIcon className="w-4 h-4" />
+                <span className="hidden sm:inline">Profile</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="dashboard">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -220,7 +228,7 @@ export default function DashboardPage() {
                               <ol className="relative border-l border-border ml-3 space-y-4">
                                 {application.timeline.map((item, idx) => (
                                   <li key={idx} className="mb-4 ml-6">
-                                    <span className="absolute flex items-center justify-center w-6 h-6 bg-primary/20 rounded-full -left-3 ring-8 ring-background">
+                                    <span className="absolute flex items-center justify-center w-6 h-6 bg-blue-600 rounded-full -left-3 ring-8 ring-background">
                                       <CalendarIcon className="w-3 h-3 text-primary" />
                                     </span>
                                     <h3 className="font-medium">{item.step}</h3>
