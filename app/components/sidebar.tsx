@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 export function Sidebar() {
   return (
-    <div className="w-64 border-zinc-800 flex flex-col h-screen">
+    <div className="w-64 border-zinc-800 flex flex-col h-screen bg-foreground">
       {/* Logo */}
       <div className="p-[1.43rem] border-b border-zinc-800">
         <Link href="/" className="flex items-center">

@@ -92,7 +92,7 @@ export default function ApplicationStatusPage() {
   const formattedStatus = formatApplicationStatus(status || "");
 
   return (
-    <div className="container mx-auto max-w-4xl py-8 px-4">
+    <div className="container mx-auto max-w-4xl py-8 px-4 bg-foreground">
       <div className="mb-6">
         <Link href="/dashboard">
           <Button variant="ghost" size="sm" className="mb-4 cursor-pointer">

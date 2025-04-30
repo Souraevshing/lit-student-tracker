@@ -105,21 +105,21 @@ export default function SubmitTaskPage() {
   }
 
   return (
-    <div className="container mx-auto max-w-4xl py-8 px-4">
+    <div className="container mx-auto max-w-4xl py-8 px-4 text-foreground">
       <div className="mb-6">
         <Link href="/dashboard">
-          <Button variant="ghost" size="sm" className="mb-4 cursor-pointer">
+          <Button variant="ghost" size="sm" className="mb-4">
             <ChevronLeftIcon className="w-4 h-4 mr-2" />
             Back to Dashboard
           </Button>
         </Link>
-        <h1 className="text-2xl font-bold flex items-center">
+        <h1 className="text-2xl font-bold flex items-center text-foreground">
           <FileTextIcon className="w-6 h-6 mr-2 text-blue-600" />
           Submit Task
         </h1>
       </div>
 
-      <Card className="mb-6">
+      <Card className="mb-6 bg-background text-foreground">
         <CardHeader>
           <CardTitle>Task Details</CardTitle>
         </CardHeader>
@@ -131,15 +131,13 @@ export default function SubmitTaskPage() {
                   ? `${userCourse} Project Proposal`
                   : "Course Project Proposal"}
               </h3>
-              <p className="text-gray-700 mt-2">
+              <p className="text-muted-foreground mt-2">
                 Create a project proposal related to{" "}
-                {userCourse || "your course"}. The proposal should include your
-                project idea, target audience, implementation plan, and expected
-                outcomes.
+                {userCourse || "your course"}.
               </p>
             </div>
-            <div className="bg-amber-50 border border-amber-200 rounded-md p-4">
-              <p className="text-amber-800">
+            <div className="bg-amber-100 dark:bg-amber-200/10 border border-amber-300 dark:border-amber-400/20 rounded-md p-4">
+              <p className="text-amber-800 dark:text-amber-300">
                 <strong>Deadline:</strong> Within 7 days of application
               </p>
             </div>
@@ -147,7 +145,7 @@ export default function SubmitTaskPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="bg-background text-foreground">
         <CardHeader>
           <CardTitle>Submit Your Work</CardTitle>
         </CardHeader>
@@ -157,14 +155,13 @@ export default function SubmitTaskPage() {
               <Label htmlFor="taskDescription">Task Description</Label>
               <Textarea
                 id="taskDescription"
-                placeholder="Describe your project proposal here..."
+                placeholder="Describe your project proposal..."
                 value={taskDescription}
                 onChange={(e) => setTaskDescription(e.target.value)}
                 className="min-h-[150px]"
               />
               <p className="text-sm text-muted-foreground">
-                You can provide your project proposal directly in this text area
-                or upload a link below.
+                You can write the proposal here or use a link below.
               </p>
             </div>
 
@@ -173,13 +170,12 @@ export default function SubmitTaskPage() {
               <Input
                 id="taskLink"
                 type="url"
-                placeholder="https://docs.google.com/document/d/..."
+                placeholder="https://docs.google.com/..."
                 value={taskLink}
                 onChange={(e) => setTaskLink(e.target.value)}
               />
               <p className="text-sm text-muted-foreground">
-                You can provide a link to Google Docs, Notion, or any other
-                platform where you&apos;ve created your proposal.
+                Accepts Google Docs, Notion, etc.
               </p>
             </div>
 
@@ -187,7 +183,7 @@ export default function SubmitTaskPage() {
               <Label htmlFor="comments">Additional Comments (Optional)</Label>
               <Textarea
                 id="comments"
-                placeholder="Any additional information you'd like to share..."
+                placeholder="Any notes for reviewers?"
                 value={comments}
                 onChange={(e) => setComments(e.target.value)}
               />
@@ -196,7 +192,7 @@ export default function SubmitTaskPage() {
             <Button
               type="submit"
               disabled={(!taskDescription && !taskLink) || loading}
-              className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+              className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               {loading ? (
                 <>

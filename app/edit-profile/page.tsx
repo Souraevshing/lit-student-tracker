@@ -41,7 +41,7 @@ interface UserProfile {
   id: string;
   name: string;
   email: string;
-  age?: number | null | undefined;
+  age?: number | null;
   gender: string | null;
   qualification: string | null;
   course: string;
@@ -71,16 +71,11 @@ export default function EditProfilePage() {
         try {
           setLoading(true);
           const response = await fetch("/api/user/profile");
-
-          if (!response.ok) {
-            toast.error("Failed to fetch user profile");
-            throw new Error("Failed to fetch user profile");
-          }
+          if (!response.ok) throw new Error("Failed to fetch user profile");
 
           const userData = await response.json();
           setProfile(userData);
 
-          // Set form values
           form.reset({
             name: userData.name || "",
             age: userData.age || undefined,
@@ -90,7 +85,7 @@ export default function EditProfilePage() {
 
           setError("");
         } catch (error) {
-          console.error("Error fetching user profile:", error);
+          console.error("Error:", error);
           setError("Failed to load your profile. Please try again later.");
           toast.error("Failed to load profile");
         } finally {
@@ -99,9 +94,7 @@ export default function EditProfilePage() {
       }
     }
 
-    if (authStatus === "authenticated") {
-      fetchUserProfile();
-    }
+    if (authStatus === "authenticated") fetchUserProfile();
   }, [session, authStatus, form]);
 
   const onSubmit = async (data: ProfileFormValues) => {
@@ -109,22 +102,20 @@ export default function EditProfilePage() {
       setSaving(true);
       const response = await fetch("/api/user/profile", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.error || "Failed to update profile");
-        throw new Error(errorData.message || "Failed to update profile");
+        throw new Error(errorData.message);
       }
 
       toast.success("Profile updated successfully");
       router.push("/dashboard");
     } catch (error) {
-      console.error("Error updating profile:", error);
+      console.error(error);
       toast.error(
         error instanceof Error ? error.message : "Failed to update profile"
       );
@@ -141,12 +132,10 @@ export default function EditProfilePage() {
     );
   }
 
-  if (authStatus === "unauthenticated") {
-    return null;
-  }
+  if (authStatus === "unauthenticated") return null;
 
   return (
-    <div className="container mx-auto max-w-2xl py-8 px-4">
+    <div className="container mx-auto max-w-2xl py-8 px-4 bg-background text-foreground">
       <div className="mb-6">
         <Link href="/dashboard">
           <Button variant="ghost" size="sm" className="mb-4 cursor-pointer">
@@ -180,7 +169,7 @@ export default function EditProfilePage() {
                   type="email"
                   value={profile?.email || ""}
                   disabled
-                  className="bg-gray-50"
+                  className="bg-muted"
                 />
                 <p className="text-sm text-muted-foreground">
                   Email cannot be changed
@@ -214,16 +203,14 @@ export default function EditProfilePage() {
                           placeholder="Enter your age"
                           min="1"
                           max="120"
-                          {...field}
-                          value={field.value || ""}
-                          onChange={(e) => {
-                            const value = e.target.value;
+                          value={field.value ?? ""}
+                          onChange={(e) =>
                             field.onChange(
-                              value === ""
+                              e.target.value === ""
                                 ? undefined
-                                : Number.parseInt(value, 10)
-                            );
-                          }}
+                                : Number(e.target.value)
+                            )
+                          }
                         />
                       </FormControl>
                       <FormMessage />
@@ -240,9 +227,8 @@ export default function EditProfilePage() {
                     <FormItem>
                       <FormLabel>Gender</FormLabel>
                       <Select
+                        value={field.value ?? ""}
                         onValueChange={field.onChange}
-                        defaultValue={field.value || undefined}
-                        value={field.value || undefined}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -270,9 +256,8 @@ export default function EditProfilePage() {
                     <FormItem>
                       <FormLabel>Qualification</FormLabel>
                       <Select
+                        value={field.value ?? ""}
                         onValueChange={field.onChange}
-                        defaultValue={field.value || undefined}
-                        value={field.value || undefined}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -281,11 +266,9 @@ export default function EditProfilePage() {
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="high-school">
-                            High School Graduate
+                            High School
                           </SelectItem>
-                          <SelectItem value="college">
-                            College Graduate
-                          </SelectItem>
+                          <SelectItem value="college">College</SelectItem>
                           <SelectItem value="professional">
                             Working Professional
                           </SelectItem>
@@ -304,7 +287,7 @@ export default function EditProfilePage() {
                   id="course"
                   value={profile?.course || ""}
                   disabled
-                  className="bg-gray-50"
+                  className="bg-muted"
                 />
                 <p className="text-sm text-muted-foreground">
                   Course cannot be changed
@@ -316,15 +299,15 @@ export default function EditProfilePage() {
                   <Button
                     variant="outline"
                     type="button"
-                    className="w-full sm:w-auto cursor-pointer"
+                    className="w-full sm:w-auto"
                   >
                     Cancel
                   </Button>
                 </Link>
                 <Button
                   type="submit"
-                  className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto cursor-pointer"
                   disabled={saving}
+                  className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   {saving ? (
                     <>

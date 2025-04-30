@@ -5,12 +5,12 @@ import { Button } from "@/components/ui/button";
 
 export default function HomePage() {
   return (
-    <div className="h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-black text-center p-4">
+    <div className="h-screen flex items-center justify-center bg-gradient-to-br from-background to-primary/20 text-center p-4">
       <div className="max-w-3xl">
-        <h1 className="text-4xl font-bold mb-6 text-black">
+        <h1 className="text-4xl font-bold mb-6 text-foreground">
           Welcome to LIT School
         </h1>
-        <p className="mb-8 text-lg text-gray-400 max-w-2xl mx-auto">
+        <p className="mb-8 text-lg text-muted-foreground max-w-2xl mx-auto">
           Unlock your creative potential with our specialized courses in Creator
           Marketing, Creatorpreneurship, and Next Gen Business.
         </p>
@@ -19,7 +19,7 @@ export default function HomePage() {
             <Button
               variant="outline"
               size="lg"
-              className="w-full sm:w-auto cursor-pointer hover:bg-zinc-700 hover:text-white"
+              className="w-full sm:w-auto cursor-pointer"
             >
               <LogInIcon className="w-4 h-4 mr-2" />
               Log In
@@ -27,7 +27,8 @@ export default function HomePage() {
           </Link>
           <Link href="/register">
             <Button
-              className="w-full sm:w-auto cursor-pointer bg-blue-600 hover:bg-blue-700 text-white"
+              variant="default"
+              className="w-full sm:w-auto cursor-pointer"
               size="lg"
             >
               <UserPlusIcon className="w-4 h-4 mr-2" />

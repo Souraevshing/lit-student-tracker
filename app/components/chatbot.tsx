@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,8 @@ interface ChatBotProps {
 }
 
 export default function ChatBot({ status }: ChatBotProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
   const [messages, setMessages] = useState([
     {
       role: "system",
@@ -64,32 +66,45 @@ export default function ChatBot({ status }: ChatBotProps) {
     }
   };
 
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   return (
-    <Card className="w-full max-w-4xl mx-auto overflow-x-hidden">
+    <Card className="w-full max-w-4xl mx-auto overflow-x-hidden bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
       <CardHeader>
         <CardTitle>🤖 AI Chatbot</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <ScrollArea className="h-[400px] rounded border p-3 bg-white overflow-y-auto">
+        <ScrollArea className="h-[400px] rounded border p-3 bg-foreground overflow-y-auto overflow-x-hidden">
           <div className="space-y-4">
             {messages.map((msg, i) => (
               <div
                 key={i}
                 className="text-sm leading-snug space-y-1 break-words"
               >
-                <div className="font-medium capitalize text-gray-800">
+                <div className="font-medium capitalize text-gray-800 dark:text-gray-300">
                   {msg.role === "system"
                     ? "System"
                     : msg.role === "user"
                     ? "You"
                     : "Assistant"}
                 </div>
-                <div className="text-muted-foreground">{msg.content}</div>
+                <div className="text-xs text-gray-800 dark:text-gray-300">
+                  {new Date().toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </div>
+
+                <div className="text-muted-foreground whitespace-pre-wrap break-words">
+                  {msg.content}
+                </div>
                 {i !== messages.length - 1 && <Separator />}
               </div>
             ))}
             {isLoading && (
-              <div className="text-sm flex items-center text-gray-500">
+              <div className="text-sm flex items-center text-gray-500 dark:text-gray-300">
                 <LoadingSpinner />
                 Assistant is typing...
               </div>

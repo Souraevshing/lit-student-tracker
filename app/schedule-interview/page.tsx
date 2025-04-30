@@ -103,7 +103,7 @@ export default function ScheduleInterviewPage() {
   }
 
   return (
-    <div className="container mx-auto max-w-4xl py-8 px-4">
+    <div className="container mx-auto max-w-4xl py-8 px-4 text-foreground">
       <div className="mb-6">
         <Link href="/dashboard">
           <Button variant="ghost" size="sm" className="mb-4 cursor-pointer">
@@ -117,7 +117,7 @@ export default function ScheduleInterviewPage() {
         </h1>
       </div>
 
-      <Card>
+      <Card className="bg-background text-foreground">
         <CardHeader>
           <CardTitle>Select Interview Date and Time</CardTitle>
         </CardHeader>
@@ -126,7 +126,7 @@ export default function ScheduleInterviewPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="date">Select Date</Label>
-                <div className="border rounded-md p-3">
+                <div className="border rounded-md p-3 bg-muted">
                   <Calendar
                     mode="single"
                     selected={date}
@@ -144,7 +144,7 @@ export default function ScheduleInterviewPage() {
                         date.getDay() === 6
                       );
                     }}
-                    className="rounded-md border"
+                    className="rounded-md border bg-background"
                   />
                 </div>
               </div>
@@ -181,17 +181,17 @@ export default function ScheduleInterviewPage() {
                 )}
 
                 {date && timeSlot && (
-                  <div className="mt-6 p-4 bg-blue-50 border border-blue-100 rounded-md">
-                    <h3 className="font-medium text-blue-800 mb-2">
+                  <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md">
+                    <h3 className="font-medium text-blue-800 dark:text-blue-200 mb-2">
                       Interview Details
                     </h3>
-                    <p className="text-sm text-blue-700">
+                    <p className="text-sm text-blue-700 dark:text-blue-200">
                       <strong>Date:</strong> {date.toLocaleDateString()}
                     </p>
-                    <p className="text-sm text-blue-700">
+                    <p className="text-sm text-blue-700 dark:text-blue-200">
                       <strong>Time:</strong> {timeSlot}
                     </p>
-                    <p className="text-sm text-blue-700 mt-2">
+                    <p className="text-sm text-blue-700 dark:text-blue-200 mt-2">
                       The interview will be conducted via Zoom. You will receive
                       the meeting link via email before the scheduled time.
                     </p>

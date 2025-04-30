@@ -1,12 +1,9 @@
 "use client";
 
-export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
-
 import { CheckCircleIcon, ChevronLeftIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -19,6 +16,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 
 export default function PaymentPage() {
   const { data: session, status } = useSession();
@@ -65,9 +65,7 @@ export default function PaymentPage() {
     try {
       const response = await fetch("/api/payment/create-checkout", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           amount: courseDetails.price,
           courseId: courseDetails.id,
@@ -91,11 +89,7 @@ export default function PaymentPage() {
       }
     } catch (error) {
       console.error("Payment error:", error);
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "An error occurred while processing your payment"
-      );
+      toast.error(error instanceof Error ? error.message : "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -103,7 +97,7 @@ export default function PaymentPage() {
 
   if (status === "loading") {
     return (
-      <div className="h-screen flex items-center justify-center">
+      <div className="h-screen flex items-center justify-center bg-background text-foreground">
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -115,14 +109,14 @@ export default function PaymentPage() {
   }
 
   return (
-    <div className="container mx-auto py-10 px-4">
+    <div className="container mx-auto py-10 px-4 bg-background text-foreground">
       <Suspense fallback={null}>
         <PaymentStatusHandler />
       </Suspense>
 
       <div className="mb-6">
         <Link href="/dashboard">
-          <Button variant="ghost" size="sm" className="mb-4 cursor-pointer">
+          <Button variant="ghost" size="sm" className="mb-4">
             <ChevronLeftIcon className="w-4 h-4 mr-2" />
             Back to Dashboard
           </Button>
@@ -140,16 +134,16 @@ export default function PaymentPage() {
               <CardTitle>Payment Information</CardTitle>
               <CardDescription>
                 You will be redirected to our secure payment processor to
-                complete your payment
+                complete your payment.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                <div className="bg-blue-50 p-4 rounded-md">
-                  <h3 className="font-medium text-blue-800 mb-2">
+                <div className="bg-muted p-4 rounded-md">
+                  <h3 className="font-medium text-foreground mb-2">
                     Important Information
                   </h3>
-                  <ul className="list-disc pl-5 space-y-1 text-blue-700">
+                  <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
                     <li>Your payment is secure and encrypted</li>
                     <li>You will receive a receipt via email</li>
                     <li>
@@ -162,7 +156,7 @@ export default function PaymentPage() {
                 <Button
                   onClick={handlePayment}
                   disabled={loading || !courseDetails}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   {loading ? (
                     <>
@@ -210,7 +204,7 @@ export default function PaymentPage() {
                     </div>
                   </div>
 
-                  <div className="bg-blue-50 p-3 rounded-md text-sm">
+                  <div className="bg-muted p-3 rounded-md text-sm">
                     <p className="flex items-start">
                       <CheckCircleIcon className="w-4 h-4 mr-2 mt-0.5 text-blue-600" />
                       Secure payment processing
@@ -239,8 +233,6 @@ export default function PaymentPage() {
 }
 
 function PaymentStatusHandler() {
-  "use client";
-
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -255,5 +247,3 @@ function PaymentStatusHandler() {
 
   return null;
 }
-
-import { useSearchParams } from "next/navigation";

@@ -74,7 +74,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-4 bg-foreground">
       <div className="mb-6">
         <Link href="/dashboard">
           <Button variant="ghost" size="sm" className="mb-4 cursor-pointer">

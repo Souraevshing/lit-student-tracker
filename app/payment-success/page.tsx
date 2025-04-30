@@ -55,7 +55,7 @@ export default function PaymentSuccessPage() {
 
   if (status === "loading") {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-screen bg-background">
         <LoadingSpinner />
       </div>
     );
@@ -67,36 +67,38 @@ export default function PaymentSuccessPage() {
   }
 
   return (
-    <div className="container mx-auto max-w-md py-16 px-4">
+    <div className="container mx-auto max-w-md py-16 px-4 bg-background text-foreground">
       <Card className="text-center">
         <CardHeader>
           <div className="flex justify-center mb-4">
-            <div className="rounded-full bg-green-100 p-3">
+            <div className="rounded-full bg-green-100 dark:bg-green-900 p-3">
               <CheckCircleIcon className="h-12 w-12 text-green-600" />
             </div>
           </div>
           <CardTitle className="text-2xl">Payment Successful!</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <p className="text-gray-700">
+          <p className="text-muted-foreground">
             Thank you for your payment. Your admission to LIT School has been
             confirmed. You will receive an email with all the details about your
             course, including start date and access instructions.
           </p>
 
-          <div className="bg-blue-50 p-4 rounded-md text-left">
-            <h3 className="font-medium text-blue-800 mb-2">Next Steps:</h3>
-            <ul className="space-y-2 text-sm text-blue-700">
+          <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-md text-left border border-blue-100 dark:border-blue-800">
+            <h3 className="font-medium text-blue-800 dark:text-blue-300 mb-2">
+              Next Steps:
+            </h3>
+            <ul className="space-y-2 text-sm text-blue-700 dark:text-blue-200">
               <li className="flex items-start">
-                <CheckCircleIcon className="w-4 h-4 mr-2 mt-0.5 text-blue-600" />
+                <CheckCircleIcon className="w-4 h-4 mr-2 mt-0.5 text-blue-600 dark:text-blue-400" />
                 Check your email for course access details
               </li>
               <li className="flex items-start">
-                <CheckCircleIcon className="w-4 h-4 mr-2 mt-0.5 text-blue-600" />
+                <CheckCircleIcon className="w-4 h-4 mr-2 mt-0.5 text-blue-600 dark:text-blue-400" />
                 Complete your student profile
               </li>
               <li className="flex items-start">
-                <CheckCircleIcon className="w-4 h-4 mr-2 mt-0.5 text-blue-600" />
+                <CheckCircleIcon className="w-4 h-4 mr-2 mt-0.5 text-blue-600 dark:text-blue-400" />
                 Join the orientation session
               </li>
             </ul>
@@ -109,7 +111,7 @@ export default function PaymentSuccessPage() {
               </Button>
             </Link>
             <Link href="/course-materials">
-              <Button variant="outline" className="w-full cursor-pointer">
+              <Button variant="outline" className="w-full">
                 View Course Materials
               </Button>
             </Link>

@@ -27,6 +27,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatApplicationStatus } from "@/lib/utils/format-status";
 import { signOut } from "next-auth/react";
+import AdmissionPage from "../admission/page";
 
 type TimelineStep = {
   step: string;
@@ -124,12 +125,14 @@ export default function DashboardPage() {
     : "Pending";
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow sticky top-0 z-10">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <header className="bg-white dark:bg-gray-800 shadow sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center cursor-pointer">
             <GraduationCapIcon className="w-6 h-6 text-blue-600 mr-2" />
-            <h1 className="text-xl font-bold">LIT School</h1>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+              LIT School
+            </h1>
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm hidden md:inline-block font-medium">
@@ -142,7 +145,7 @@ export default function DashboardPage() {
                 toast.error("Logged out");
                 signOut({ redirectTo: "/" });
               }}
-              className="text-red-500 hover:text-red-700 hover:bg-red-50 cursor-pointer"
+              className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-600 cursor-pointer"
             >
               <LogOutIcon className="w-4 h-4 mr-2" />
               Log Out
@@ -422,7 +425,7 @@ export default function DashboardPage() {
           </TabsContent>
 
           <TabsContent value="admission">
-            <AdmissionUI />
+            <AdmissionPage />
           </TabsContent>
 
           <TabsContent value="profile">
@@ -508,325 +511,6 @@ export default function DashboardPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
-  );
-}
-
-function AdmissionUI() {
-  const [user, setUser] = useState({
-    email: "",
-    password: "",
-    name: "",
-    age: "",
-    gender: "",
-    qualification: "",
-    courseChoice: "",
-  });
-  const [statusData, setStatusData] = useState<{
-    status: string;
-    email: string;
-    timeline: { step: string; date: string }[];
-  } | null>(null);
-  const [taskFile, setTaskFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const handleRegister = async () => {
-    if (
-      !user.email ||
-      !user.password ||
-      !user.name ||
-      !user.age ||
-      !user.gender ||
-      !user.qualification ||
-      !user.courseChoice
-    ) {
-      toast.error("All fields are required");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const res = await fetch("/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(user),
-      });
-
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || "Failed to register");
-      }
-
-      toast.success("Registered successfully!");
-      fetchStatus();
-    } catch (err) {
-      console.error(err);
-      toast.error(err instanceof Error ? err.message : "Registration failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchStatus = async () => {
-    try {
-      const res = await fetch("/api/application/status");
-      if (!res.ok) throw new Error("Failed to fetch status");
-
-      const data = await res.json();
-      setStatusData(data);
-    } catch (err) {
-      console.error("Error fetching status:", err);
-      toast.error("Error fetching application status");
-    }
-  };
-
-  const submitTask = async () => {
-    if (!taskFile) {
-      toast.error("Please upload a task file");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const formData = new FormData();
-      formData.append("file", taskFile);
-
-      const res = await fetch("/api/application/submit-task", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || "Failed to submit task");
-      }
-
-      toast.success("Task submitted!");
-      fetchStatus();
-    } catch (err) {
-      console.error("Task submission error:", err);
-      toast.error(err instanceof Error ? err.message : "Failed to submit task");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const proceedToPayment = () => {
-    if (statusData?.status === "accepted") {
-      window.location.href = "/payment";
-    } else {
-      toast.error("Your application is not accepted yet.");
-    }
-  };
-
-  useEffect(() => {
-    fetchStatus();
-  }, []);
-
-  return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Admission Portal</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold mb-4">Register</h2>
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-sm font-medium">Email</label>
-                    <input
-                      type="email"
-                      className="w-full border rounded px-3 py-2 mt-1"
-                      placeholder="Email"
-                      value={user.email}
-                      onChange={(e) =>
-                        setUser({ ...user, email: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Password</label>
-                    <input
-                      type="password"
-                      className="w-full border rounded px-3 py-2 mt-1"
-                      placeholder="Password"
-                      value={user.password}
-                      onChange={(e) =>
-                        setUser({ ...user, password: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Name</label>
-                    <input
-                      type="text"
-                      className="w-full border rounded px-3 py-2 mt-1"
-                      placeholder="Name"
-                      value={user.name}
-                      onChange={(e) =>
-                        setUser({ ...user, name: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Age</label>
-                    <input
-                      type="number"
-                      className="w-full border rounded px-3 py-2 mt-1"
-                      placeholder="Age"
-                      value={user.age}
-                      onChange={(e) =>
-                        setUser({ ...user, age: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Gender</label>
-                    <select
-                      className="w-full border rounded px-3 py-2 mt-1"
-                      value={user.gender}
-                      onChange={(e) =>
-                        setUser({ ...user, gender: e.target.value })
-                      }
-                    >
-                      <option value="">Select Gender</option>
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Qualification</label>
-                    <select
-                      className="w-full border rounded px-3 py-2 mt-1"
-                      value={user.qualification}
-                      onChange={(e) =>
-                        setUser({ ...user, qualification: e.target.value })
-                      }
-                    >
-                      <option value="">Select Qualification</option>
-                      <option value="high-school">High School</option>
-                      <option value="bachelors">Bachelor&apos;s Degree</option>
-                      <option value="masters">Master&apos;s Degree</option>
-                      <option value="phd">PhD</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Course Choice</label>
-                    <select
-                      className="w-full border rounded px-3 py-2 mt-1"
-                      value={user.courseChoice}
-                      onChange={(e) =>
-                        setUser({ ...user, courseChoice: e.target.value })
-                      }
-                    >
-                      <option value="">Select Course</option>
-                      <option value="Creator Marketer">Creator Marketer</option>
-                      <option value="Creatorpreneur">Creatorpreneur</option>
-                      <option value="Next Gen Business">
-                        Next Gen Business
-                      </option>
-                      <option value="Electronics Communication">
-                        Electronics Communication
-                      </option>
-                    </select>
-                  </div>
-                </div>
-                <Button
-                  onClick={handleRegister}
-                  className="mt-4 bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
-                  disabled={loading}
-                >
-                  {loading ? "Registering..." : "Register"}
-                </Button>
-              </div>
-
-              {statusData?.status === "Registered" && (
-                <div>
-                  <h2 className="text-lg font-semibold mb-4">Submit Task</h2>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="text-sm font-medium">
-                        Upload Task File
-                      </label>
-                      <input
-                        type="file"
-                        className="w-full border rounded px-3 py-2 mt-1"
-                        onChange={(e) => {
-                          if (e.target.files?.[0]) {
-                            setTaskFile(e.target.files[0]);
-                          }
-                        }}
-                      />
-                    </div>
-                    <Button
-                      onClick={submitTask}
-                      className="bg-green-600 hover:bg-green-700 text-white cursor-pointer"
-                      disabled={loading || !taskFile}
-                    >
-                      {loading ? "Submitting..." : "Submit Task"}
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {statusData?.status === "Accepted" && (
-                <div>
-                  <h2 className="text-lg font-semibold mb-4">
-                    Proceed to Payment
-                  </h2>
-                  <Button
-                    onClick={proceedToPayment}
-                    className="bg-purple-600 hover:bg-purple-700 text-white cursor-pointer"
-                    disabled={loading}
-                  >
-                    {loading ? "Processing..." : "Pay Now"}
-                  </Button>
-                </div>
-              )}
-            </div>
-
-            <div>
-              <h2 className="text-lg font-semibold mb-4">Application Status</h2>
-              {statusData ? (
-                <div className="bg-gray-50 border rounded-md p-4">
-                  <div className="mb-4">
-                    <span className="font-medium">Status: </span>
-                    <Badge>{statusData.status}</Badge>
-                  </div>
-                  <div>
-                    <h3 className="font-medium mb-2">Timeline</h3>
-                    {statusData.timeline && statusData.timeline.length > 0 ? (
-                      <ol className="relative border-l border-gray-300 ml-3 space-y-4">
-                        {statusData.timeline.map((item, idx) => (
-                          <li key={idx} className="mb-4 ml-6">
-                            <span className="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -left-3 ring-8 ring-white">
-                              <CalendarIcon className="w-3 h-3 text-blue-600" />
-                            </span>
-                            <h3 className="font-medium">{item.step}</h3>
-                            <p className="text-sm text-gray-500">{item.date}</p>
-                          </li>
-                        ))}
-                      </ol>
-                    ) : (
-                      <p className="text-gray-500">No timeline events yet.</p>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-6">
-                  <p className="text-gray-500">
-                    No application data available.
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

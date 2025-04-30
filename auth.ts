@@ -107,5 +107,4 @@ export const { handlers, auth } = NextAuth({
     signOut: "/",
     error: "/login",
   },
-  debug: true,
 });

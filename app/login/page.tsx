@@ -26,7 +26,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col justify-center items-center px-4">
+    <div className="h-screen flex flex-col justify-center items-center px-4 bg-background text-foreground">
       <h1 className="text-2xl font-semibold mb-6">Login to continue</h1>
       <AuthForm type="login" />
     </div>
