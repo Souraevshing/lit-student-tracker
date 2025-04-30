@@ -138,7 +138,10 @@ export default function DashboardPage() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => signOut({ redirectTo: "/" })}
+              onClick={() => {
+                toast.error("Logged out");
+                signOut({ redirectTo: "/" });
+              }}
               className="text-red-500 hover:text-red-700 hover:bg-red-50 cursor-pointer"
             >
               <LogOutIcon className="w-4 h-4 mr-2" />
