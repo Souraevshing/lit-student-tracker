@@ -112,7 +112,7 @@ export default function ScheduleInterviewPage() {
           </Button>
         </Link>
         <h1 className="text-2xl font-bold flex items-center">
-          <CalendarIcon className="w-6 h-6 mr-2 text-blue-600" />
+          <CalendarIcon className="w-6 h-6 mr-2 text-primary" />
           Schedule Interview
         </h1>
       </div>
@@ -181,17 +181,17 @@ export default function ScheduleInterviewPage() {
                 )}
 
                 {date && timeSlot && (
-                  <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md">
-                    <h3 className="font-medium text-blue-800 dark:text-blue-200 mb-2">
+                  <div className="mt-6 p-4 bg-primary/5 border border-primary/10 rounded-md">
+                    <h3 className="font-medium text-primary mb-2">
                       Interview Details
                     </h3>
-                    <p className="text-sm text-blue-700 dark:text-blue-200">
+                    <p className="text-sm text-foreground">
                       <strong>Date:</strong> {date.toLocaleDateString()}
                     </p>
-                    <p className="text-sm text-blue-700 dark:text-blue-200">
+                    <p className="text-sm text-foreground">
                       <strong>Time:</strong> {timeSlot}
                     </p>
-                    <p className="text-sm text-blue-700 dark:text-blue-200 mt-2">
+                    <p className="text-sm text-muted-foreground mt-2">
                       The interview will be conducted via Zoom. You will receive
                       the meeting link via email before the scheduled time.
                     </p>
@@ -203,7 +203,7 @@ export default function ScheduleInterviewPage() {
             <Button
               type="submit"
               disabled={!date || !timeSlot || loading}
-              className="bg-blue-600 hover:bg-blue-700 text-white w-full cursor-pointer"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground w-full cursor-pointer"
             >
               {loading ? <LoadingSpinner /> : "Confirm Interview"}
             </Button>

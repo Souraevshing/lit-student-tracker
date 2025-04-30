@@ -156,7 +156,7 @@ export default function PaymentPage() {
                 <Button
                   onClick={handlePayment}
                   disabled={loading || !courseDetails}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
                   {loading ? (
                     <>
@@ -194,7 +194,7 @@ export default function PaymentPage() {
                       <span>Course Fee</span>
                       <span>₹{courseDetails.price.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between mb-2 text-green-600">
+                    <div className="flex justify-between mb-2 text-emerald-600 dark:text-emerald-400">
                       <span>Discount</span>
                       <span>₹0.00</span>
                     </div>
@@ -206,15 +206,15 @@ export default function PaymentPage() {
 
                   <div className="bg-muted p-3 rounded-md text-sm">
                     <p className="flex items-start">
-                      <CheckCircleIcon className="w-4 h-4 mr-2 mt-0.5 text-blue-600" />
+                      <CheckCircleIcon className="w-4 h-4 mr-2 mt-0.5 text-primary" />
                       Secure payment processing
                     </p>
                     <p className="flex items-start mt-2">
-                      <CheckCircleIcon className="w-4 h-4 mr-2 mt-0.5 text-blue-600" />
+                      <CheckCircleIcon className="w-4 h-4 mr-2 mt-0.5 text-primary" />
                       Full access to course materials
                     </p>
                     <p className="flex items-start mt-2">
-                      <CheckCircleIcon className="w-4 h-4 mr-2 mt-0.5 text-blue-600" />
+                      <CheckCircleIcon className="w-4 h-4 mr-2 mt-0.5 text-primary" />
                       Certificate upon completion
                     </p>
                   </div>

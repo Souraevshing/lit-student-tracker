@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import {
@@ -53,6 +52,7 @@ export default function DashboardPage() {
     nextStep: string | null;
   } | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_activeTab, setActiveTab] = useState("dashboard");
 
   useEffect(() => {
@@ -125,14 +125,12 @@ export default function DashboardPage() {
     : "Pending";
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <header className="bg-white dark:bg-gray-800 shadow sticky top-0 z-10">
+    <div className="min-h-screen bg-background">
+      <header className="bg-card shadow sticky top-0 z-10 border-b border-border">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center cursor-pointer">
-            <GraduationCapIcon className="w-6 h-6 text-blue-600 mr-2" />
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-              LIT School
-            </h1>
+            <GraduationCapIcon className="w-6 h-6 text-primary mr-2" />
+            <h1 className="text-xl font-bold text-foreground">LIT School</h1>
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm hidden md:inline-block font-medium">
@@ -145,7 +143,7 @@ export default function DashboardPage() {
                 toast.error("Logged out");
                 signOut({ redirectTo: "/" });
               }}
-              className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-600 cursor-pointer"
+              className="text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer"
             >
               <LogOutIcon className="w-4 h-4 mr-2" />
               Log Out
@@ -167,7 +165,7 @@ export default function DashboardPage() {
           className="w-full"
           onValueChange={setActiveTab}
         >
-          <TabsList className="grid grid-cols-3 md:grid-cols-5 mb-6 w-full">
+          <TabsList className="mb-6 w-fit">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <HomeIcon className="w-4 h-4" />
               <span className="hidden sm:inline">Dashboard</span>
@@ -188,7 +186,7 @@ export default function DashboardPage() {
                 <Card>
                   <CardHeader className="pb-3">
                     <CardTitle className="text-xl flex items-center">
-                      <FileTextIcon className="w-5 h-5 mr-2 text-blue-600" />
+                      <FileTextIcon className="w-5 h-5 mr-2 text-primary" />
                       Application Status
                     </CardTitle>
                   </CardHeader>
@@ -216,24 +214,24 @@ export default function DashboardPage() {
 
                         <div className="space-y-2">
                           <h3 className="font-medium">Application Timeline</h3>
-                          <div className="border rounded-md p-4 bg-gray-50">
+                          <div className="border rounded-md p-4 bg-muted/50 border-border">
                             {application.timeline &&
                             application.timeline.length > 0 ? (
-                              <ol className="relative border-l border-gray-300 ml-3 space-y-4">
+                              <ol className="relative border-l border-border ml-3 space-y-4">
                                 {application.timeline.map((item, idx) => (
                                   <li key={idx} className="mb-4 ml-6">
-                                    <span className="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -left-3 ring-8 ring-white">
-                                      <CalendarIcon className="w-3 h-3 text-blue-600" />
+                                    <span className="absolute flex items-center justify-center w-6 h-6 bg-primary/20 rounded-full -left-3 ring-8 ring-background">
+                                      <CalendarIcon className="w-3 h-3 text-primary" />
                                     </span>
                                     <h3 className="font-medium">{item.step}</h3>
-                                    <p className="text-sm text-gray-500">
+                                    <p className="text-sm text-muted-foreground">
                                       {formatDate(item.date)}
                                     </p>
                                   </li>
                                 ))}
                               </ol>
                             ) : (
-                              <p className="text-gray-500 text-sm">
+                              <p className="text-muted-foreground text-sm">
                                 No timeline events yet.
                               </p>
                             )}
@@ -241,17 +239,17 @@ export default function DashboardPage() {
                         </div>
 
                         {application.nextStep && (
-                          <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
-                            <h3 className="font-medium text-blue-800 mb-1">
+                          <div className="bg-primary/10 border border-primary/20 rounded-md p-4">
+                            <h3 className="font-medium text-primary mb-1">
                               Next Step:
                             </h3>
-                            <p className="text-blue-700">
+                            <p className="text-primary/90">
                               {application.nextStep}
                             </p>
 
                             {application.status === "interview" && (
                               <Link href="/schedule-interview">
-                                <Button className="mt-3 bg-blue-600 hover:bg-blue-700 text-white cursor-pointer">
+                                <Button className="mt-3 bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer">
                                   Schedule Interview
                                 </Button>
                               </Link>
@@ -259,7 +257,7 @@ export default function DashboardPage() {
 
                             {application.status === "task" && (
                               <Link href="/submit-task">
-                                <Button className="mt-3 bg-blue-600 hover:bg-blue-700 text-white cursor-pointer">
+                                <Button className="mt-3 bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer">
                                   Submit Task
                                 </Button>
                               </Link>
@@ -267,7 +265,7 @@ export default function DashboardPage() {
 
                             {application.status === "payment" && (
                               <Link href="/payment">
-                                <Button className="mt-3 bg-blue-600 hover:bg-blue-700 text-white cursor-pointer">
+                                <Button className="mt-3 bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer">
                                   <CreditCardIcon className="w-4 h-4 mr-2" />
                                   Make Payment
                                 </Button>
@@ -287,30 +285,30 @@ export default function DashboardPage() {
                 <Card>
                   <CardHeader className="pb-3">
                     <CardTitle className="text-xl flex items-center">
-                      <UserIcon className="w-5 h-5 mr-2 text-blue-600" />
+                      <UserIcon className="w-5 h-5 mr-2 text-primary" />
                       Your Profile
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <p className="text-sm text-gray-500">Name</p>
+                        <p className="text-sm text-muted-foreground">Name</p>
                         <p className="font-medium">
                           {session.user?.name || "Not provided"}
                         </p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-500">Email</p>
+                        <p className="text-sm text-muted-foreground">Email</p>
                         <p className="font-medium">{session.user?.email}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-500">Course</p>
+                        <p className="text-sm text-muted-foreground">Course</p>
                         <p className="font-medium">
                           {userProfile?.course || "Not specified"}
                         </p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-muted-foreground">
                           Application Date
                         </p>
                         <p className="font-medium">
@@ -437,28 +435,30 @@ export default function DashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
-                      <h3 className="font-medium text-gray-500">
+                      <h3 className="font-medium text-muted-foreground">
                         Personal Information
                       </h3>
                       <div className="grid grid-cols-1 gap-4 mt-2">
                         <div>
-                          <p className="text-sm text-gray-500">Name</p>
+                          <p className="text-sm text-muted-foreground">Name</p>
                           <p className="font-medium">
                             {session.user?.name || "Not provided"}
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-500">Email</p>
+                          <p className="text-sm text-muted-foreground">Email</p>
                           <p className="font-medium">{session.user?.email}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-500">Age</p>
+                          <p className="text-sm text-muted-foreground">Age</p>
                           <p className="font-medium">
                             {userProfile?.age || "Not provided"}
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-500">Gender</p>
+                          <p className="text-sm text-muted-foreground">
+                            Gender
+                          </p>
                           <p className="font-medium">
                             {userProfile?.gender?.toUpperCase() ||
                               "Not provided"}
@@ -467,29 +467,35 @@ export default function DashboardPage() {
                       </div>
                     </div>
                     <Link href="/edit-profile">
-                      <Button className="cursor-pointer">Edit Profile</Button>
+                      <Button className="bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer">
+                        Edit Profile
+                      </Button>
                     </Link>
                   </div>
                   <div className="space-y-4">
                     <div>
-                      <h3 className="font-medium text-gray-500">
+                      <h3 className="font-medium text-muted-foreground">
                         Academic Information
                       </h3>
                       <div className="grid grid-cols-1 gap-4 mt-2">
                         <div>
-                          <p className="text-sm text-gray-500">Qualification</p>
+                          <p className="text-sm text-muted-foreground">
+                            Qualification
+                          </p>
                           <p className="font-medium">
                             {userProfile?.qualification || "Not provided"}
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-500">Course</p>
+                          <p className="text-sm text-muted-foreground">
+                            Course
+                          </p>
                           <p className="font-medium">
                             {userProfile?.course || "Not specified"}
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-sm text-muted-foreground">
                             Application Date
                           </p>
                           <p className="font-medium">
@@ -499,7 +505,9 @@ export default function DashboardPage() {
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-500">Status</p>
+                          <p className="text-sm text-muted-foreground">
+                            Status
+                          </p>
                           <p className="font-medium">{formattedStatus}</p>
                         </div>
                       </div>

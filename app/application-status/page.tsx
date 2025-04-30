@@ -78,7 +78,7 @@ export default function ApplicationStatusPage() {
 
   if (authStatus === "loading" || loading) {
     return (
-      <div className="h-screen flex items-center justify-center">
+      <div className="h-screen flex items-center justify-center bg-background">
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -92,7 +92,7 @@ export default function ApplicationStatusPage() {
   const formattedStatus = formatApplicationStatus(status || "");
 
   return (
-    <div className="container mx-auto max-w-4xl py-8 px-4 bg-foreground">
+    <div className="container mx-auto max-w-4xl py-8 px-4 bg-background text-foreground">
       <div className="mb-6">
         <Link href="/dashboard">
           <Button variant="ghost" size="sm" className="mb-4 cursor-pointer">
@@ -101,13 +101,13 @@ export default function ApplicationStatusPage() {
           </Button>
         </Link>
         <h1 className="text-2xl font-bold flex items-center">
-          <FileTextIcon className="w-6 h-6 mr-2 text-blue-600" />
+          <FileTextIcon className="w-6 h-6 mr-2 text-primary" />
           Application Status
         </h1>
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 mb-6 border border-red-300 p-4 rounded-md">
+        <div className="bg-destructive/10 text-destructive mb-6 border border-destructive/20 p-4 rounded-md">
           {error}
         </div>
       )}
@@ -121,35 +121,35 @@ export default function ApplicationStatusPage() {
             <div>
               <h2 className="text-lg font-medium mb-4">Application Timeline</h2>
               {timeline.length > 0 ? (
-                <ol className="relative border-l border-gray-300 ml-3 space-y-6">
+                <ol className="relative border-l border-border ml-3 space-y-6">
                   {timeline.map((item) => (
                     <li key={item.id} className="mb-6 ml-6">
-                      <span className="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -left-3 ring-8 ring-white">
-                        <CalendarIcon className="w-3 h-3 text-blue-600" />
+                      <span className="absolute flex items-center justify-center w-6 h-6 bg-primary/10 rounded-full -left-3 ring-8 ring-background">
+                        <CalendarIcon className="w-3 h-3 text-primary" />
                       </span>
                       <h3 className="font-medium">{item.step}</h3>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-muted-foreground">
                         {formatDate(item.date)}
                       </p>
                     </li>
                   ))}
                 </ol>
               ) : (
-                <p className="text-gray-500">No timeline events yet.</p>
+                <p className="text-muted-foreground">No timeline events yet.</p>
               )}
             </div>
 
             {status === "interview" && (
-              <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
-                <h3 className="font-medium text-blue-800 mb-2">
+              <div className="bg-primary/5 border border-primary/20 rounded-md p-4">
+                <h3 className="font-medium text-primary mb-2">
                   Next Step: Schedule an Interview
                 </h3>
-                <p className="text-blue-700 mb-4">
+                <p className="text-foreground mb-4">
                   Please schedule an interview with one of our administrators to
                   proceed with your application.
                 </p>
                 <Link href="/schedule-interview">
-                  <Button className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer">
+                  <Button className="bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer">
                     Schedule Interview
                   </Button>
                 </Link>
@@ -157,16 +157,16 @@ export default function ApplicationStatusPage() {
             )}
 
             {status === "task" && (
-              <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
-                <h3 className="font-medium text-blue-800 mb-2">
+              <div className="bg-primary/5 border border-primary/20 rounded-md p-4">
+                <h3 className="font-medium text-primary mb-2">
                   Next Step: Submit Required Task
                 </h3>
-                <p className="text-blue-700 mb-4">
+                <p className="text-foreground mb-4">
                   Please complete and submit the required task to proceed with
                   your application.
                 </p>
                 <Link href="/submit-task">
-                  <Button className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer">
+                  <Button className="bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer">
                     Submit Task
                   </Button>
                 </Link>
@@ -174,16 +174,16 @@ export default function ApplicationStatusPage() {
             )}
 
             {status === "payment" && (
-              <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
-                <h3 className="font-medium text-blue-800 mb-2">
+              <div className="bg-primary/5 border border-primary/20 rounded-md p-4">
+                <h3 className="font-medium text-primary mb-2">
                   Next Step: Complete Payment
                 </h3>
-                <p className="text-blue-700 mb-4">
+                <p className="text-foreground mb-4">
                   Congratulations! Your application has been accepted. Please
                   complete the payment to secure your admission.
                 </p>
                 <Link href="/payment">
-                  <Button className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer">
+                  <Button className="bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer">
                     Make Payment
                   </Button>
                 </Link>
@@ -191,11 +191,11 @@ export default function ApplicationStatusPage() {
             )}
 
             {status === "accepted" && (
-              <div className="bg-green-50 border border-green-200 rounded-md p-4">
-                <h3 className="font-medium text-green-800 mb-2">
+              <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/30 rounded-md p-4">
+                <h3 className="font-medium text-emerald-800 dark:text-emerald-400 mb-2">
                   Application Accepted
                 </h3>
-                <p className="text-green-700">
+                <p className="text-emerald-700 dark:text-emerald-300">
                   Congratulations! Your application has been accepted and your
                   payment has been processed. Welcome to LIT School!
                 </p>
@@ -203,11 +203,11 @@ export default function ApplicationStatusPage() {
             )}
 
             {status === "rejected" && (
-              <div className="bg-red-50 border border-red-200 rounded-md p-4">
-                <h3 className="font-medium text-red-800 mb-2">
+              <div className="bg-destructive/10 border border-destructive/20 rounded-md p-4">
+                <h3 className="font-medium text-destructive mb-2">
                   Application Rejected
                 </h3>
-                <p className="text-red-700">
+                <p className="text-destructive/90">
                   We regret to inform you that your application has been
                   rejected. Please contact our support team for more
                   information.

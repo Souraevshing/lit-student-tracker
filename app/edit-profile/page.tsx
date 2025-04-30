@@ -144,13 +144,13 @@ export default function EditProfilePage() {
           </Button>
         </Link>
         <h1 className="text-2xl font-bold flex items-center">
-          <UserIcon className="w-6 h-6 mr-2 text-blue-600" />
+          <UserIcon className="w-6 h-6 mr-2 text-primary" />
           Edit Profile
         </h1>
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-md mb-6 border border-red-200">
+        <div className="bg-destructive/10 text-destructive p-4 rounded-md mb-6 border border-destructive/20">
           {error}
         </div>
       )}
@@ -307,7 +307,7 @@ export default function EditProfilePage() {
                 <Button
                   type="submit"
                   disabled={saving}
-                  className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
+                  className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
                   {saving ? (
                     <>

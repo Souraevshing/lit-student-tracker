@@ -3,6 +3,7 @@
 import confetti from "canvas-confetti";
 import { CheckCircleIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -15,6 +16,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 export default function PaymentSuccessPage() {
   const { status } = useSession();
   const router = useRouter();
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -27,13 +29,18 @@ export default function PaymentSuccessPage() {
       const duration = 3 * 1000;
       const end = Date.now() + duration;
 
+      // Use theme-aware confetti colors
+      const lightColors = ["#3b82f6", "#10b981", "#6366f1"];
+      const darkColors = ["#60a5fa", "#34d399", "#818cf8"];
+      const colors = theme === "dark" ? darkColors : lightColors;
+
       const frame = () => {
         confetti({
           particleCount: 2,
           angle: 60,
           spread: 55,
           origin: { x: 0 },
-          colors: ["#3b82f6", "#10b981", "#6366f1"],
+          colors,
         });
 
         confetti({
@@ -41,7 +48,7 @@ export default function PaymentSuccessPage() {
           angle: 120,
           spread: 55,
           origin: { x: 1 },
-          colors: ["#3b82f6", "#10b981", "#6366f1"],
+          colors,
         });
 
         if (Date.now() < end) {
@@ -51,7 +58,7 @@ export default function PaymentSuccessPage() {
 
       frame();
     }
-  }, [status]);
+  }, [status, theme]);
 
   if (status === "loading") {
     return (
@@ -72,7 +79,7 @@ export default function PaymentSuccessPage() {
         <CardHeader>
           <div className="flex justify-center mb-4">
             <div className="rounded-full bg-green-100 dark:bg-green-900 p-3">
-              <CheckCircleIcon className="h-12 w-12 text-green-600" />
+              <CheckCircleIcon className="h-12 w-12 text-green-600 dark:text-green-400" />
             </div>
           </div>
           <CardTitle className="text-2xl">Payment Successful!</CardTitle>
@@ -106,7 +113,7 @@ export default function PaymentSuccessPage() {
 
           <div className="flex flex-col space-y-3">
             <Link href="/dashboard">
-              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+              <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
                 Go to Dashboard
               </Button>
             </Link>
