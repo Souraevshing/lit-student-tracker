@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOutIcon } from "lucide-react";
+import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -76,7 +77,10 @@ export function Sidebar() {
 
       {/* Logout */}
       <div className="p-4 border-t border-zinc-800">
-        <button className="flex items-center w-full px-3 py-2 rounded-md text-red-400 hover:bg-zinc-800">
+        <button
+          onClick={() => signOut({ redirectTo: "/" })}
+          className="flex items-center w-full px-3 py-2 rounded-md text-red-400 hover:bg-zinc-800"
+        >
           <LogOutIcon className="h-4 w-4 mr-2" />
           Logout
         </button>
