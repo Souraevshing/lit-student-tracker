@@ -44,7 +44,12 @@ export function LoginForm() {
           }
 
           router.push("/dashboard");
-        })()
+        })(),
+        {
+          loading: "Logging in...",
+          error: "Login failed",
+          success: "Login successful",
+        }
       );
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "An error occurred");

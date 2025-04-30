@@ -45,7 +45,12 @@ export function RegisterForm() {
 
           await signOut({ redirect: false });
           router.push("/login");
-        })()
+        })(),
+        {
+          loading: "Registering...",
+          error: "Registration failed",
+          success: "Registration successful",
+        }
       );
     } catch (err) {
       if (err instanceof Error) toast.error(err.message);

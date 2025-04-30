@@ -1,6 +1,8 @@
 "use client";
 
-import { Download, X } from "lucide-react";
+import { Download, QrCode, X } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -10,30 +12,60 @@ import type { AccountFormValues } from "@/lib/utils/account-form.schema";
 interface IdCardProps {
   onClose: () => void;
   userData: AccountFormValues;
-  onDownload: () => void;
+  onDownload: () => Promise<void>;
+  isDownloading?: boolean;
 }
 
-export function IdCard({ onClose, userData, onDownload }: IdCardProps) {
-  const formatDate = (date: string) => {
+export function IdCard({
+  onClose,
+  userData,
+  onDownload,
+  isDownloading = false,
+}: IdCardProps) {
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const formatDate = (date: Date | string) => {
     try {
-      return new Date().toLocaleDateString("en-US", {
+      if (date instanceof Date) {
+        return date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "numeric",
+          day: "numeric",
+        });
+      }
+      return new Date(date).toLocaleDateString("en-US", {
         year: "numeric",
         month: "numeric",
         day: "numeric",
       });
     } catch (e) {
-      console.log(e);
-      return date;
+      console.error("Date formatting error:", e);
+      return typeof date === "string" ? date : "Invalid Date";
     }
   };
 
   const currentDate = new Date();
-  const issueDate = formatDate(currentDate.toISOString());
+  const issueDate = formatDate(currentDate);
   const expiryDate = formatDate(
-    new Date(
-      currentDate.setFullYear(currentDate.getFullYear() + 1)
-    ).toISOString()
+    new Date(currentDate.setFullYear(currentDate.getFullYear() + 1))
   );
+
+  const studentId = `LIT${userData.fullName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")}${Math.floor(1000 + Math.random() * 9000)}`;
+
+  const handleDownload = async () => {
+    try {
+      setIsGenerating(true);
+      await onDownload();
+    } catch (error) {
+      console.error("Download error:", error);
+      toast("Download failed");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
@@ -54,10 +86,11 @@ export function IdCard({ onClose, userData, onDownload }: IdCardProps) {
               <div
                 id="id-card-front"
                 className="flex-1 bg-zinc-800 rounded-lg overflow-hidden border border-zinc-700"
+                style={{ width: "300px", maxWidth: "100%" }}
               >
                 <div className="bg-blue-600 text-white p-4 flex justify-between items-center">
                   <div className="font-bold text-xl">LIT</div>
-                  <div className="text-xs">LITCM085</div>
+                  <div className="text-xs">{studentId}</div>
                 </div>
 
                 <div className="p-4">
@@ -65,14 +98,15 @@ export function IdCard({ onClose, userData, onDownload }: IdCardProps) {
                     <div className="w-24 h-32 bg-zinc-700 rounded-md overflow-hidden">
                       <Avatar className="h-full w-full">
                         <AvatarImage
-                          src="/thoughtful-gaze.png"
+                          src={userData.profileImage || "/thoughtful-gaze.png"}
                           alt={userData.fullName}
                           className="object-cover"
+                          crossOrigin="anonymous"
                         />
-                        <AvatarFallback className="text-xl">
+                        <AvatarFallback className="text-xl h-full w-full bg-zinc-600">
                           {userData.fullName
                             .split(" ")
-                            .map((n: string) => n[0])
+                            .map((n) => n[0])
                             .join("")}
                         </AvatarFallback>
                       </Avatar>
@@ -81,23 +115,28 @@ export function IdCard({ onClose, userData, onDownload }: IdCardProps) {
                     <div className="flex-1">
                       <h3 className="font-bold text-lg">{userData.fullName}</h3>
                       <p className="text-sm text-zinc-400">
-                        {userData.institute} CM04320
+                        {userData.institute} • {studentId.substring(3, 7)}
                       </p>
                       <p className="text-sm mt-2">{userData.email}</p>
                       <p className="text-sm">{userData.contact}</p>
 
                       <div className="mt-4 text-xs text-zinc-400">
                         <p className="flex justify-between">
-                          <span>Father&apos;s Name:</span>
-                          <span>John Doe Sr.</span>
+                          <span>Date of Birth:</span>
+                          <span>{formatDate(userData.dob)}</span>
                         </p>
                         <p className="flex justify-between">
-                          <span>Emergency Contact:</span>
-                          <span>9414071012</span>
+                          <span>Gender:</span>
+                          <span>
+                            {userData.gender.charAt(0).toUpperCase() +
+                              userData.gender.slice(1)}
+                          </span>
                         </p>
                         <p className="flex justify-between">
                           <span>Blood Group:</span>
-                          <span>{userData.bloodGroup.replace("_", "")}</span>
+                          <span>
+                            {userData.bloodGroup.replace("_", "").toUpperCase()}
+                          </span>
                         </p>
                       </div>
                     </div>
@@ -120,14 +159,18 @@ export function IdCard({ onClose, userData, onDownload }: IdCardProps) {
                       The LIT School Learn * Innovate * Transform
                     </p>
                     <p className="text-xs text-zinc-400">
-                      www.litschool.in info@litschool.in
+                      www.litschool.in • info@litschool.in
                     </p>
                   </div>
                 </div>
               </div>
 
               {/* Hidden ID Card Back for PDF generation */}
-              <div id="id-card-back" className="hidden">
+              <div
+                id="id-card-back"
+                className="absolute left-[-9999px] top-0"
+                style={{ width: "300px", height: "auto", overflow: "hidden" }}
+              >
                 <div className="bg-zinc-800 rounded-lg overflow-hidden border border-zinc-700 p-4">
                   <div className="border-b border-zinc-700 pb-4 mb-4">
                     <h3 className="font-bold text-center mb-2">
@@ -167,12 +210,20 @@ export function IdCard({ onClose, userData, onDownload }: IdCardProps) {
 
                   <div className="flex justify-between items-center">
                     <div className="text-xs text-zinc-400">
-                      <p>Card ID: LITCM085</p>
-                      <p>Student ID: CM04320</p>
+                      <p>Card ID: {studentId}</p>
+                      <p>Student ID: {studentId.substring(3, 7)}</p>
+                      <p>
+                        Social:{" "}
+                        {userData.linkedin
+                          ? `LinkedIn: ${userData.linkedin}`
+                          : ""}
+                        {userData.instagram
+                          ? ` • Instagram: ${userData.instagram}`
+                          : ""}
+                      </p>
                     </div>
                     <div className="w-20 h-20 bg-zinc-700 flex items-center justify-center">
-                      {/* QR Code placeholder */}
-                      <div className="text-xs text-center">QR Code</div>
+                      <QrCode className="h-12 w-12 text-zinc-400" />
                     </div>
                   </div>
                 </div>
@@ -186,13 +237,24 @@ export function IdCard({ onClose, userData, onDownload }: IdCardProps) {
                   wherever you go.
                 </p>
 
-                <Button
-                  className="mt-auto bg-violet-600 hover:bg-violet-700 text-white flex items-center gap-2"
-                  onClick={onDownload}
-                >
-                  <Download className="h-4 w-4" />
-                  Download as PDF
-                </Button>
+                <div className="mt-auto space-y-3">
+                  <Button
+                    className="w-full bg-violet-600 hover:bg-violet-700 text-white flex items-center gap-2"
+                    onClick={handleDownload}
+                    disabled={isGenerating || isDownloading}
+                  >
+                    <Download className="h-4 w-4" />
+                    {isGenerating || isDownloading
+                      ? "Generating PDF..."
+                      : "Download as PDF"}
+                  </Button>
+
+                  <div className="text-xs text-zinc-400">
+                    <p>• Card ID: {studentId}</p>
+                    <p>• Valid until: {expiryDate}</p>
+                    <p>• Contains your personal and academic information</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

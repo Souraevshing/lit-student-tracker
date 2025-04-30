@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import type React from "react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -61,9 +61,12 @@ import { Sidebar } from "./sidebar";
 export function Account() {
   const [showIdCard, setShowIdCard] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [profileImage, setProfileImage] = useState<string>(
     "/thoughtful-gaze.png"
   );
+  const [formData, setFormData] = useState<AccountFormValues | null>(null);
+  const [formChanged, setFormChanged] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { setTheme } = useTheme();
 
@@ -72,15 +75,24 @@ export function Account() {
     mode: "onChange",
   });
 
+  useEffect(() => {
+    const subscription = form.watch(() => {
+      setFormChanged(true);
+    });
+    return () => subscription.unsubscribe();
+  }, [form, form.watch]);
+
   const onSubmit = async (data: AccountFormValues) => {
     setIsSubmitting(true);
     try {
       data.profileImage = profileImage;
 
-      // Simulate a delay for the submission
+      setFormData(data);
+
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      toast.success("Profile updated");
+      toast.success("Profile updated successfully");
+      setFormChanged(false);
 
       setShowIdCard(true);
     } catch (error) {
@@ -101,12 +113,12 @@ export function Account() {
 
     try {
       if (!file.type.startsWith("image/")) {
-        toast.error("Invalid file");
+        toast.error("Please upload an image file");
         return;
       }
 
       if (file.size > 5 * 1024 * 1024) {
-        toast.error("File too large");
+        toast.error("Image size should be less than 5MB");
         return;
       }
 
@@ -114,8 +126,9 @@ export function Account() {
       setProfileImage(base64);
 
       form.setValue("profileImage", base64);
+      setFormChanged(true);
 
-      toast.success("Image uploaded");
+      toast.success("Profile image uploaded successfully");
     } catch (error) {
       if (error instanceof Error) toast.error(error.message);
     }
@@ -126,10 +139,14 @@ export function Account() {
   };
 
   const downloadIdCardAsPDF = async () => {
+    setIsDownloading(true);
     const idCardElement = document.getElementById("id-card-front");
     const idCardBackElement = document.getElementById("id-card-back");
 
-    if (!idCardElement || !idCardBackElement) return;
+    if (!idCardElement || !idCardBackElement) {
+      setIsDownloading(false);
+      return;
+    }
 
     try {
       const pdf = new jsPDF({
@@ -139,7 +156,16 @@ export function Account() {
         precision: 100,
       });
 
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      pdf.setFillColor(30, 30, 30);
+      pdf.rect(
+        0,
+        0,
+        pdf.internal.pageSize.getWidth(),
+        pdf.internal.pageSize.getHeight(),
+        "F"
+      );
+
+      await new Promise((resolve) => setTimeout(resolve, 800));
 
       try {
         const frontCanvas = await html2canvas(idCardElement, {
@@ -154,20 +180,41 @@ export function Account() {
             for (let i = 0; i < images.length; i++) {
               images[i].crossOrigin = "anonymous";
             }
+
+            const clonedElement = clonedDoc.getElementById("id-card-front");
+            if (clonedElement) {
+              clonedElement.style.width = "300px";
+              clonedElement.style.height = "auto";
+              clonedElement.style.overflow = "hidden";
+            }
           },
         });
 
-        const frontImgData = frontCanvas.toDataURL("image/jpeg", 0.95);
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+
+        const imgWidth = frontCanvas.width;
+        const imgHeight = frontCanvas.height;
+        const ratio = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
+
+        const xOffset = (pageWidth - imgWidth * ratio) / 2;
+        const yOffset = (pageHeight - imgHeight * ratio) / 2;
+
+        const frontImgData = frontCanvas.toDataURL("image/jpeg", 1.0);
+
         pdf.addImage(
           frontImgData,
           "JPEG",
-          0,
-          0,
-          pdf.internal.pageSize.getWidth(),
-          pdf.internal.pageSize.getHeight()
+          xOffset,
+          yOffset,
+          imgWidth * ratio,
+          imgHeight * ratio
         );
 
         pdf.addPage();
+
+        pdf.setFillColor(30, 30, 30);
+        pdf.rect(0, 0, pageWidth, pageHeight, "F");
 
         const backCanvas = await html2canvas(idCardBackElement, {
           scale: 2,
@@ -181,42 +228,78 @@ export function Account() {
             for (let i = 0; i < images.length; i++) {
               images[i].crossOrigin = "anonymous";
             }
+
+            const clonedElement = clonedDoc.getElementById("id-card-back");
+            if (clonedElement) {
+              clonedElement.style.width = "300px";
+              clonedElement.style.height = "auto";
+              clonedElement.style.overflow = "hidden";
+              clonedElement.style.position = "static";
+              clonedElement.style.left = "0";
+            }
           },
         });
 
-        const backImgData = backCanvas.toDataURL("image/jpeg", 0.95);
+        const backImgWidth = backCanvas.width;
+        const backImgHeight = backCanvas.height;
+        const backRatio = Math.min(
+          pageWidth / backImgWidth,
+          pageHeight / backImgHeight
+        );
+
+        const backXOffset = (pageWidth - backImgWidth * backRatio) / 2;
+        const backYOffset = (pageHeight - backImgHeight * backRatio) / 2;
+
+        const backImgData = backCanvas.toDataURL("image/jpeg", 1.0);
+
         pdf.addImage(
           backImgData,
           "JPEG",
-          0,
-          0,
-          pdf.internal.pageSize.getWidth(),
-          pdf.internal.pageSize.getHeight()
+          backXOffset,
+          backYOffset,
+          backImgWidth * backRatio,
+          backImgHeight * backRatio
         );
       } catch (canvasError) {
         console.error("Canvas error, using fallback:", canvasError);
-        const fallbackPdf = generateFallbackPDF({
+        const fallbackPdf = await generateFallbackPDF({
           ...form.getValues(),
           profileImage,
         });
         if (fallbackPdf) {
-          const resolvedFallbackPdf = await fallbackPdf;
-          resolvedFallbackPdf.save("LIT-ID-Card.pdf");
-
-          toast.success("ID Card Downloaded");
+          fallbackPdf.save("LIT-ID-Card.pdf");
+          toast.success("ID Card Downloaded (Fallback Method)");
           return;
         } else {
-          toast.error("Failed to generate PDF using fallback method");
           throw new Error("Both PDF generation methods failed");
         }
       }
 
       pdf.save("LIT-ID-Card.pdf");
-
-      toast.success("ID Card Downloaded");
+      toast.success("ID Card Downloaded Successfully");
     } catch (error) {
       console.error("Error generating PDF:", error);
-      toast.error("Download Failed");
+      toast.error("Download Failed. Please try again.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const handleDownloadClick = () => {
+    if (formChanged) {
+      toast.warning("Please save your changes before downloading the ID card", {
+        action: {
+          label: "Save Now",
+          onClick: () => form.handleSubmit(onSubmit)(),
+        },
+      });
+      return;
+    }
+
+    if (formData) {
+      setShowIdCard(true);
+    } else {
+      form.handleSubmit(onSubmit)();
     }
   };
 
@@ -655,20 +738,32 @@ export function Account() {
                   </div>
                 </div>
 
-                {/* Action Buttons - Moved to the left */}
                 <div className="mt-8 flex justify-start gap-4">
                   <Button
                     type="button"
                     variant="outline"
                     className="bg-zinc-800 border-zinc-700 hover:bg-zinc-700 text-white"
-                    onClick={() => form.reset()}
+                    onClick={() => {
+                      if (formChanged) {
+                        if (
+                          confirm(
+                            "Are you sure you want to discard your changes?"
+                          )
+                        ) {
+                          form.reset();
+                          setFormChanged(false);
+                        }
+                      } else {
+                        form.reset();
+                      }
+                    }}
                   >
                     Cancel
                   </Button>
                   <Button
                     type="submit"
                     className="bg-violet-600 hover:bg-violet-700 text-white"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || !formChanged}
                   >
                     {isSubmitting ? "Saving..." : "Save"}
                   </Button>
@@ -713,10 +808,11 @@ export function Account() {
             </div>
             <Button
               className="bg-violet-600 hover:bg-violet-700 text-white"
-              onClick={() => setShowIdCard(true)}
+              onClick={handleDownloadClick}
+              disabled={isSubmitting}
             >
               <Download className="h-4 w-4 mr-2" />
-              Download
+              {formChanged ? "Save & Download" : "Download"}
             </Button>
           </div>
         </div>
@@ -726,8 +822,9 @@ export function Account() {
       {showIdCard && (
         <IdCard
           onClose={() => setShowIdCard(false)}
-          userData={{ ...form.getValues(), profileImage }}
+          userData={{ ...(formData || form.getValues()), profileImage }}
           onDownload={downloadIdCardAsPDF}
+          isDownloading={isDownloading}
         />
       )}
     </div>
