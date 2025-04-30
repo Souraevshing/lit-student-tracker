@@ -69,12 +69,12 @@ export function IdCard({
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden bg-white border border-gray-900 dark:bg-zinc-200">
+      <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden bg-background border border-border">
         <div className="relative perspective-normal w-full h-[350px]">
           <Button
             variant="ghost"
             size="icon"
-            className="absolute right-2 top-2 z-10 text-white bg-zinc-800 dark:bg-zinc-300"
+            className="absolute right-2 top-2 z-10"
             onClick={onClose}
           >
             <X className="h-4 w-4" />
@@ -85,17 +85,17 @@ export function IdCard({
               {/* ID Card Design - Front */}
               <div
                 id="id-card-front"
-                className="flex-1 bg-zinc-800 dark:bg-zinc-300 rounded-lg overflow-hidden border border-zinc-700"
+                className="flex-1 bg-card rounded-lg overflow-hidden border border-border"
                 style={{ width: "300px", maxWidth: "100%" }}
               >
-                <div className="bg-blue-600 text-white p-4 flex justify-between items-center">
+                <div className="bg-primary text-primary-foreground p-4 flex justify-between items-center">
                   <div className="font-bold text-xl">LIT</div>
                   <div className="text-xs">{studentId}</div>
                 </div>
 
                 <div className="p-4">
                   <div className="flex gap-4">
-                    <div className="w-24 h-32 bg-zinc-700 rounded-md overflow-hidden">
+                    <div className="w-24 h-32 bg-muted rounded-md overflow-hidden">
                       <Avatar className="h-full w-full">
                         <AvatarImage
                           src={userData.profileImage || "/thoughtful-gaze.png"}
@@ -103,7 +103,7 @@ export function IdCard({
                           className="object-cover"
                           crossOrigin="anonymous"
                         />
-                        <AvatarFallback className="text-xl h-full w-full bg-zinc-600 dark:bg-gray-200">
+                        <AvatarFallback className="text-xl h-full w-full bg-muted">
                           {userData.fullName
                             .split(" ")
                             .map((n) => n[0])
@@ -113,14 +113,20 @@ export function IdCard({
                     </div>
 
                     <div className="flex-1">
-                      <h3 className="font-bold text-lg">{userData.fullName}</h3>
-                      <p className="text-sm dark:text-zinc-800 text-zinc-200">
+                      <h3 className="font-bold text-lg text-foreground">
+                        {userData.fullName}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
                         {userData.institute} • {studentId.substring(3, 7)}
                       </p>
-                      <p className="text-sm mt-2">{userData.email}</p>
-                      <p className="text-sm">{userData.contact}</p>
+                      <p className="text-sm mt-2 text-foreground">
+                        {userData.email}
+                      </p>
+                      <p className="text-sm text-foreground">
+                        {userData.contact}
+                      </p>
 
-                      <div className="mt-4 text-xs dark:text-zinc-800 text-zinc-300">
+                      <div className="mt-4 text-xs text-muted-foreground">
                         <p className="flex justify-between">
                           <span>Date of Birth:</span>
                           <span>{formatDate(userData.dob)}</span>
@@ -143,22 +149,22 @@ export function IdCard({
                   </div>
 
                   <div className="mt-4 text-xs">
-                    <p className="dark:text-zinc-300 text-zinc-600">
+                    <p className="text-muted-foreground">
                       <span className="font-medium">Address:</span> 123 Main
                       Street, City, State, 302016
                     </p>
                   </div>
 
-                  <div className="mt-4 flex justify-between text-xs dark:text-zinc-400 text-zinc-800">
+                  <div className="mt-4 flex justify-between text-xs text-muted-foreground">
                     <p>Issued On: {issueDate}</p>
                     <p>Expiry Date: {expiryDate}</p>
                   </div>
 
-                  <div className="mt-4 pt-4 border-t border-zinc-800 dark:border-zinc-300 text-center">
-                    <p className="text-xs dark:text-zinc-400 text-zinc-800">
+                  <div className="mt-4 pt-4 border-t border-border text-center">
+                    <p className="text-xs text-muted-foreground">
                       The LIT School Learn * Innovate * Transform
                     </p>
-                    <p className="text-xs text-zinc-400">
+                    <p className="text-xs text-muted-foreground">
                       www.litschool.in • info@litschool.in
                     </p>
                   </div>
@@ -171,15 +177,12 @@ export function IdCard({
                 className="absolute left-[-9999px] top-0"
                 style={{ width: "300px", height: "auto", overflow: "hidden" }}
               >
-                <div className="bg-zinc-800 dark:bg-zinc-300 rounded-lg overflow-hidden border border-zinc-700 p-4">
-                  <div className="border-b border-zinc-700 pb-4 mb-4">
-                    <h3 className="font-bold text-center mb-2">
+                <div className="bg-card rounded-lg overflow-hidden border border-border p-4">
+                  <div className="border-b border-border pb-4 mb-4">
+                    <h3 className="font-bold text-center mb-2 text-foreground">
                       TERMS AND CONDITIONS
                     </h3>
-                    <ol
-                      className="text-xs dark:text-zinc-400 text-zinc-800
-                    space-y-2 list-decimal pl-4"
-                    >
+                    <ol className="text-xs text-muted-foreground space-y-2 list-decimal pl-4">
                       <li>
                         This card is the property of LIT School and must be
                         returned upon request.
@@ -201,10 +204,10 @@ export function IdCard({
                   </div>
 
                   <div className="mb-4">
-                    <h4 className="font-medium text-sm mb-2">
+                    <h4 className="font-medium text-sm mb-2 text-foreground">
                       Emergency Contacts:
                     </h4>
-                    <div className="text-xs dark:text-zinc-800 text-zinc-300 space-y-1">
+                    <div className="text-xs text-muted-foreground space-y-1">
                       <p>Campus Security: +91 98765 43210</p>
                       <p>Medical Emergency: +91 98765 12345</p>
                       <p>Administration: +91 98765 67890</p>
@@ -212,7 +215,7 @@ export function IdCard({
                   </div>
 
                   <div className="flex justify-between items-center">
-                    <div className="text-xs dark:text-zinc-800 text-zinc-300">
+                    <div className="text-xs text-muted-foreground">
                       <p>Card ID: {studentId}</p>
                       <p>Student ID: {studentId.substring(3, 7)}</p>
                       <p>
@@ -225,8 +228,8 @@ export function IdCard({
                           : ""}
                       </p>
                     </div>
-                    <div className="w-20 h-20 bg-zinc-700 dark:bg-zinc-300 flex items-center justify-center">
-                      <QrCode className="h-12 w-12 dark:text-zinc-400 text-zinc-800" />
+                    <div className="w-20 h-20 bg-muted flex items-center justify-center">
+                      <QrCode className="h-12 w-12 text-muted-foreground" />
                     </div>
                   </div>
                 </div>
@@ -234,15 +237,17 @@ export function IdCard({
 
               {/* Right Side Info */}
               <div className="flex-1 flex flex-col">
-                <h2 className="text-xl font-bold mb-4">LIT ID Card</h2>
-                <p className="text-sm text-zinc-400 mb-6">
+                <h2 className="text-xl font-bold mb-4 text-foreground">
+                  LIT ID Card
+                </h2>
+                <p className="text-sm text-muted-foreground mb-6">
                   Carry your identity as a creator, innovator, and learner
                   wherever you go.
                 </p>
 
                 <div className="mt-auto space-y-3">
                   <Button
-                    className="w-full bg-violet-600 hover:bg-violet-700 text-white flex items-center gap-2"
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2"
                     onClick={handleDownload}
                     disabled={isGenerating || isDownloading}
                   >
@@ -252,7 +257,7 @@ export function IdCard({
                       : "Download as PDF"}
                   </Button>
 
-                  <div className="text-xs dark:text-zinc-400 text-zinc-800">
+                  <div className="text-xs text-muted-foreground">
                     <p>• Card ID: {studentId}</p>
                     <p>• Valid until: {expiryDate}</p>
                     <p>• Contains your personal and academic information</p>

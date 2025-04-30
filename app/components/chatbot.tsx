@@ -71,26 +71,26 @@ export default function ChatBot({ status }: ChatBotProps) {
   }, [messages]);
 
   return (
-    <Card className="w-full max-w-4xl mx-auto overflow-x-hidden bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+    <Card className="w-full max-w-4xl mx-auto overflow-x-hidden">
       <CardHeader>
         <CardTitle>🤖 AI Chatbot</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <ScrollArea className="h-[400px] rounded border p-3 bg-foreground overflow-y-auto overflow-x-hidden">
+        <ScrollArea className="h-[400px] rounded border border-border p-3 bg-muted/30 overflow-y-auto overflow-x-hidden">
           <div className="space-y-4">
             {messages.map((msg, i) => (
               <div
                 key={i}
                 className="text-sm leading-snug space-y-1 break-words"
               >
-                <div className="font-medium capitalize text-gray-800 dark:text-gray-300">
+                <div className="font-medium capitalize text-foreground">
                   {msg.role === "system"
                     ? "System"
                     : msg.role === "user"
                     ? "You"
                     : "Assistant"}
                 </div>
-                <div className="text-xs text-gray-800 dark:text-gray-300">
+                <div className="text-xs text-muted-foreground">
                   {new Date().toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
@@ -104,11 +104,12 @@ export default function ChatBot({ status }: ChatBotProps) {
               </div>
             ))}
             {isLoading && (
-              <div className="text-sm flex items-center text-gray-500 dark:text-gray-300">
+              <div className="text-sm flex items-center text-muted-foreground">
                 <LoadingSpinner />
                 Assistant is typing...
               </div>
             )}
+            <div ref={scrollRef} />
           </div>
         </ScrollArea>
 
@@ -124,7 +125,7 @@ export default function ChatBot({ status }: ChatBotProps) {
           <Button
             variant="default"
             size="lg"
-            className="sm:w-auto w-full bg-blue-600 hover:bg-blue-700 cursor-pointer"
+            className="sm:w-auto w-full bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer"
             onClick={sendMessage}
             disabled={isLoading}
           >

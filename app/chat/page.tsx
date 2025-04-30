@@ -63,7 +63,7 @@ export default function ChatPage() {
 
   if (authStatus === "loading" || loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-screen bg-background">
         <LoadingSpinner />
       </div>
     );
@@ -74,7 +74,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4 bg-foreground">
+    <div className="container mx-auto py-8 px-4 bg-background text-foreground">
       <div className="mb-6">
         <Link href="/dashboard">
           <Button variant="ghost" size="sm" className="mb-4 cursor-pointer">
@@ -90,7 +90,7 @@ export default function ChatPage() {
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-md mb-6 border border-red-200">
+        <div className="bg-destructive/10 text-destructive p-4 rounded-md mb-6 border border-destructive/20">
           {error}
         </div>
       )}

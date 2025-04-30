@@ -153,14 +153,14 @@ export default function AdminDashboard() {
 
   if (status === "loading" || loading) {
     return (
-      <div className="h-screen flex items-center justify-center">
+      <div className="h-screen flex items-center justify-center bg-background">
         <LoadingSpinner size="lg" />
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-4 bg-background text-foreground">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <h1 className="text-3xl font-bold">Admin Dashboard</h1>
         <div className="flex items-center gap-2">
@@ -198,7 +198,7 @@ export default function AdminDashboard() {
         {filteredApplications.length > 0 ? (
           filteredApplications.map((app) => (
             <Card key={app.id} className="overflow-hidden">
-              <CardHeader className="bg-gray-50">
+              <CardHeader className="bg-muted/50">
                 <div className="flex flex-col md:flex-row justify-between md:items-center gap-2">
                   <CardTitle className="text-xl">
                     {app.user.name} ({app.user.email})
@@ -254,7 +254,7 @@ export default function AdminDashboard() {
                       variant="default"
                       onClick={() => triggerDecision(app.id, "accepted")}
                       disabled={actionLoading === app.id}
-                      className="flex-grow md:flex-grow-0 bg-green-600 text-white hover:bg-green-700 cursor-pointer"
+                      className="flex-grow md:flex-grow-0 bg-emerald-600 dark:bg-emerald-600 text-white hover:bg-emerald-700 dark:hover:bg-emerald-700 cursor-pointer"
                     >
                       Accept
                     </Button>
@@ -278,21 +278,21 @@ export default function AdminDashboard() {
                   <div>
                     <h3 className="font-semibold mb-2">Timeline:</h3>
                     {app.timeline.length > 0 ? (
-                      <ol className="relative border-l border-gray-300 ml-3 space-y-2">
+                      <ol className="relative border-l border-border ml-3 space-y-2">
                         {app.timeline.map((step) => (
                           <li key={step.id} className="mb-2 ml-6">
-                            <span className="absolute flex items-center justify-center w-4 h-4 bg-blue-100 rounded-full -left-2 ring-4 ring-white">
-                              <div className="w-1.5 h-1.5 bg-blue-600 rounded-full"></div>
+                            <span className="absolute flex items-center justify-center w-4 h-4 bg-primary/10 rounded-full -left-2 ring-4 ring-background">
+                              <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
                             </span>
                             <p className="font-medium text-sm">{step.step}</p>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-muted-foreground">
                               {new Date(step.date).toLocaleDateString()}
                             </p>
                           </li>
                         ))}
                       </ol>
                     ) : (
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-muted-foreground">
                         No timeline events yet.
                       </p>
                     )}
@@ -302,8 +302,8 @@ export default function AdminDashboard() {
             </Card>
           ))
         ) : (
-          <div className="text-center py-12 bg-gray-50 rounded-lg">
-            <p className="text-gray-500">
+          <div className="text-center py-12 bg-muted/50 rounded-lg">
+            <p className="text-muted-foreground">
               No applications found matching the selected filter.
             </p>
           </div>

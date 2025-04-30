@@ -304,7 +304,7 @@ export function Account() {
   };
 
   return (
-    <div className="flex min-h-screen bg-black text-white">
+    <div className="flex min-h-screen bg-background text-foreground">
       {/* Hidden file input */}
       <input
         type="file"
@@ -320,56 +320,40 @@ export function Account() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Top Navigation */}
-        <div className="flex items-center justify-between p-4 border-b border-zinc-800">
+        <div className="flex items-center justify-between p-4 border-b border-border">
           <div className="flex-1 max-w-md">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-zinc-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
                 placeholder="Search"
-                className="pl-9 bg-zinc-900 border-zinc-800 text-zinc-300 focus:ring-violet-500 focus:border-violet-500"
+                className="pl-9 bg-muted/50 border-border focus:ring-primary focus:border-primary"
               />
             </div>
           </div>
           <div className="flex items-center gap-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="bg-zinc-800 border-zinc-700"
-                >
+                <Button variant="outline" size="icon" className="border-border">
                   <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
                   <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
                   <span className="sr-only">Toggle theme</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="bg-zinc-800 border-zinc-700"
-              >
-                <DropdownMenuItem
-                  onClick={() => setTheme("light")}
-                  className="hover:bg-zinc-700"
-                >
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setTheme("light")}>
                   Light
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setTheme("dark")}
-                  className="hover:bg-zinc-700"
-                >
+                <DropdownMenuItem onClick={() => setTheme("dark")}>
                   Dark
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setTheme("system")}
-                  className="hover:bg-zinc-700"
-                >
+                <DropdownMenuItem onClick={() => setTheme("system")}>
                   System
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <button className="text-zinc-400 hover:text-white relative">
+            <button className="text-muted-foreground hover:text-foreground relative">
               <span className="sr-only">Notifications</span>
               <svg
                 width="20"
@@ -406,10 +390,10 @@ export function Account() {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 p-6 bg-zinc-900 overflow-y-auto">
+        <div className="flex-1 p-6 bg-muted/30 overflow-y-auto">
           {/* Header Section */}
           <div className="mb-6">
-            <div className="inline-block px-3 py-1 rounded-full bg-zinc-800 text-sm mb-4">
+            <div className="inline-block px-3 py-1 rounded-full bg-muted text-sm mb-4">
               Account Details
             </div>
             <div className="flex items-center gap-4 mb-2">
@@ -425,12 +409,12 @@ export function Account() {
                 <h1 className="text-2xl font-bold">
                   {form.watch("fullName") || "John Doe"}
                 </h1>
-                <p className="text-zinc-400">
+                <p className="text-muted-foreground">
                   {form.watch("institute") || "LIT School"}
                 </p>
               </div>
             </div>
-            <p className="text-zinc-400 text-sm">
+            <p className="text-muted-foreground text-sm">
               Maintain all your profile information along with your passwords.
             </p>
           </div>
@@ -438,11 +422,11 @@ export function Account() {
           {/* Form Section */}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <div className="bg-zinc-800 rounded-lg p-6">
+              <div className="bg-card rounded-lg p-6 border border-border">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   {/* Photo Upload Section */}
                   <div className="flex flex-col items-center">
-                    <div className="w-32 h-32 rounded-full bg-zinc-700 mb-4 overflow-hidden">
+                    <div className="w-32 h-32 rounded-full bg-muted mb-4 overflow-hidden">
                       <Avatar className="h-full w-full">
                         <AvatarImage
                           src={profileImage || "/placeholder.svg"}
@@ -452,7 +436,7 @@ export function Account() {
                         <AvatarFallback className="text-3xl">JD</AvatarFallback>
                       </Avatar>
                     </div>
-                    <p className="text-xs text-zinc-400 text-center mb-2">
+                    <p className="text-xs text-muted-foreground text-center mb-2">
                       Upload a Passport size image of yourself. Ensure that your
                       face covers 60% of this picture.
                     </p>
@@ -460,7 +444,7 @@ export function Account() {
                       type="button"
                       variant="outline"
                       size="sm"
-                      className="bg-zinc-700 border-zinc-600 hover:bg-zinc-600"
+                      className="border-border"
                       onClick={triggerFileInput}
                     >
                       <Plus className="h-4 w-4 mr-1" />
@@ -476,20 +460,20 @@ export function Account() {
                       name="fullName"
                       render={({ field }) => (
                         <FormItem className="space-y-2">
-                          <FormLabel className="text-zinc-400">
+                          <FormLabel className="text-muted-foreground">
                             Full Name
                           </FormLabel>
                           <FormControl>
                             <Input
                               {...field}
                               placeholder="Enter name"
-                              className="bg-zinc-700 border-zinc-600 focus:border-violet-500"
+                              className="bg-input border-border focus:border-primary"
                             />
                           </FormControl>
                           <div className="flex justify-end">
                             <div className="h-2 w-2 rounded-full bg-emerald-500"></div>
                           </div>
-                          <FormMessage className="text-red-400 text-xs" />
+                          <FormMessage className="text-destructive text-xs" />
                         </FormItem>
                       )}
                     />
@@ -500,18 +484,20 @@ export function Account() {
                       name="email"
                       render={({ field }) => (
                         <FormItem className="space-y-2">
-                          <FormLabel className="text-zinc-400">Email</FormLabel>
+                          <FormLabel className="text-muted-foreground">
+                            Email
+                          </FormLabel>
                           <FormControl>
                             <Input
                               {...field}
                               placeholder="Enter email"
-                              className="bg-zinc-700 border-zinc-600 focus:border-violet-500"
+                              className="bg-input border-border focus:border-primary"
                             />
                           </FormControl>
                           <div className="flex justify-end">
                             <div className="h-2 w-2 rounded-full bg-emerald-500"></div>
                           </div>
-                          <FormMessage className="text-red-400 text-xs" />
+                          <FormMessage className="text-destructive text-xs" />
                         </FormItem>
                       )}
                     />
@@ -522,20 +508,20 @@ export function Account() {
                       name="contact"
                       render={({ field }) => (
                         <FormItem className="space-y-2">
-                          <FormLabel className="text-zinc-400">
+                          <FormLabel className="text-muted-foreground">
                             Contact No.
                           </FormLabel>
                           <FormControl>
                             <Input
                               {...field}
                               placeholder="Enter phone"
-                              className="bg-zinc-700 border-zinc-600 focus:border-violet-500"
+                              className="bg-input border-border focus:border-primary"
                             />
                           </FormControl>
                           <div className="flex justify-end">
                             <div className="h-2 w-2 rounded-full bg-emerald-500"></div>
                           </div>
-                          <FormMessage className="text-red-400 text-xs" />
+                          <FormMessage className="text-destructive text-xs" />
                         </FormItem>
                       )}
                     />
@@ -546,20 +532,20 @@ export function Account() {
                       name="institute"
                       render={({ field }) => (
                         <FormItem className="space-y-2">
-                          <FormLabel className="text-zinc-400">
+                          <FormLabel className="text-muted-foreground">
                             Institute Name
                           </FormLabel>
                           <FormControl>
                             <Input
                               {...field}
                               placeholder="Enter institute"
-                              className="bg-zinc-700 border-zinc-600 focus:border-violet-500"
+                              className="bg-input border-border focus:border-primary"
                             />
                           </FormControl>
                           <div className="flex justify-end">
                             <div className="h-2 w-2 rounded-full bg-emerald-500"></div>
                           </div>
-                          <FormMessage className="text-red-400 text-xs" />
+                          <FormMessage className="text-destructive text-xs" />
                         </FormItem>
                       )}
                     />
@@ -570,7 +556,7 @@ export function Account() {
                       name="dob"
                       render={({ field }) => (
                         <FormItem className="space-y-2">
-                          <FormLabel className="text-zinc-400">
+                          <FormLabel className="text-muted-foreground">
                             Date of Birth
                           </FormLabel>
                           <Popover>
@@ -579,7 +565,7 @@ export function Account() {
                                 <Button
                                   variant="outline"
                                   className={cn(
-                                    "w-full pl-3 text-left font-normal bg-zinc-700 border-zinc-600 hover:bg-zinc-600",
+                                    "w-full pl-3 text-left font-normal bg-input border-border",
                                     !field.value && "text-muted-foreground"
                                   )}
                                 >
@@ -593,7 +579,7 @@ export function Account() {
                               </FormControl>
                             </PopoverTrigger>
                             <PopoverContent
-                              className="w-auto p-0 bg-zinc-800 border-zinc-700"
+                              className="w-auto p-0"
                               align="start"
                             >
                               <Calendar
@@ -606,11 +592,10 @@ export function Account() {
                                   date < new Date("1900-01-01")
                                 }
                                 initialFocus
-                                className="bg-zinc-800 text-white"
                               />
                             </PopoverContent>
                           </Popover>
-                          <FormMessage className="text-red-400 text-xs" />
+                          <FormMessage className="text-destructive text-xs" />
                         </FormItem>
                       )}
                     />
@@ -621,7 +606,7 @@ export function Account() {
                       name="gender"
                       render={({ field }) => (
                         <FormItem className="space-y-2">
-                          <FormLabel className="text-zinc-400">
+                          <FormLabel className="text-muted-foreground">
                             Gender
                           </FormLabel>
                           <Select
@@ -629,17 +614,17 @@ export function Account() {
                             defaultValue={field.value}
                           >
                             <FormControl>
-                              <SelectTrigger className="bg-zinc-700 border-zinc-600 focus:ring-violet-500 focus:border-violet-500">
+                              <SelectTrigger className="bg-input border-border focus:ring-primary focus:border-primary">
                                 <SelectValue placeholder="Select gender" />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent className="bg-zinc-700 border-zinc-600">
+                            <SelectContent>
                               <SelectItem value="male">Male</SelectItem>
                               <SelectItem value="female">Female</SelectItem>
                               <SelectItem value="other">Other</SelectItem>
                             </SelectContent>
                           </Select>
-                          <FormMessage className="text-red-400 text-xs" />
+                          <FormMessage className="text-destructive text-xs" />
                         </FormItem>
                       )}
                     />
@@ -650,7 +635,7 @@ export function Account() {
                       name="bloodGroup"
                       render={({ field }) => (
                         <FormItem className="space-y-2">
-                          <FormLabel className="text-zinc-400">
+                          <FormLabel className="text-muted-foreground">
                             Blood Group
                           </FormLabel>
                           <Select
@@ -658,11 +643,11 @@ export function Account() {
                             defaultValue={field.value}
                           >
                             <FormControl>
-                              <SelectTrigger className="bg-zinc-700 border-zinc-600 focus:ring-violet-500 focus:border-violet-500">
+                              <SelectTrigger className="bg-input border-border focus:ring-primary focus:border-primary">
                                 <SelectValue placeholder="Select blood group" />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent className="bg-zinc-700 border-zinc-600">
+                            <SelectContent>
                               <SelectItem value="o_positive">O+</SelectItem>
                               <SelectItem value="o_negative">O-</SelectItem>
                               <SelectItem value="a_positive">A+</SelectItem>
@@ -673,7 +658,7 @@ export function Account() {
                               <SelectItem value="ab_negative">AB-</SelectItem>
                             </SelectContent>
                           </Select>
-                          <FormMessage className="text-red-400 text-xs" />
+                          <FormMessage className="text-destructive text-xs" />
                         </FormItem>
                       )}
                     />
@@ -684,7 +669,7 @@ export function Account() {
                       name="linkedin"
                       render={({ field }) => (
                         <FormItem className="space-y-2">
-                          <FormLabel className="text-zinc-400">
+                          <FormLabel className="text-muted-foreground">
                             LinkedIn ID
                           </FormLabel>
                           <div className="relative">
@@ -692,17 +677,17 @@ export function Account() {
                               <Input
                                 {...field}
                                 placeholder="Enter linkedin id"
-                                className="bg-zinc-700 border-zinc-600 focus:border-violet-500 pr-8"
+                                className="bg-input border-border focus:border-primary pr-8"
                               />
                             </FormControl>
                             <button
                               type="button"
-                              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-zinc-400"
+                              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-muted-foreground"
                             >
                               <ExternalLink className="h-4 w-4" />
                             </button>
                           </div>
-                          <FormMessage className="text-red-400 text-xs" />
+                          <FormMessage className="text-destructive text-xs" />
                         </FormItem>
                       )}
                     />
@@ -713,7 +698,7 @@ export function Account() {
                       name="instagram"
                       render={({ field }) => (
                         <FormItem className="space-y-2">
-                          <FormLabel className="text-zinc-400">
+                          <FormLabel className="text-muted-foreground">
                             Your Instagram ID (Not Compulsory)
                           </FormLabel>
                           <div className="relative">
@@ -721,17 +706,17 @@ export function Account() {
                               <Input
                                 {...field}
                                 placeholder="Enter instagram id"
-                                className="bg-zinc-700 border-zinc-600 focus:border-violet-500 pr-8"
+                                className="bg-input border-border focus:border-primary pr-8"
                               />
                             </FormControl>
                             <button
                               type="button"
-                              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-zinc-400"
+                              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-muted-foreground"
                             >
                               <ExternalLink className="h-4 w-4" />
                             </button>
                           </div>
-                          <FormMessage className="text-red-400 text-xs" />
+                          <FormMessage className="text-destructive text-xs" />
                         </FormItem>
                       )}
                     />
@@ -742,7 +727,7 @@ export function Account() {
                   <Button
                     type="button"
                     variant="outline"
-                    className="bg-zinc-800 border-zinc-700 hover:bg-zinc-700 text-white"
+                    className="border-border"
                     onClick={() => {
                       if (formChanged) {
                         if (
@@ -762,7 +747,7 @@ export function Account() {
                   </Button>
                   <Button
                     type="submit"
-                    className="bg-violet-600 hover:bg-violet-700 text-white"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground"
                     disabled={isSubmitting || !formChanged}
                   >
                     {isSubmitting ? "Saving..." : "Save"}
@@ -773,9 +758,9 @@ export function Account() {
           </Form>
 
           {/* ID Card Section */}
-          <div className="mt-6 bg-foreground rounded-lg p-4 flex items-center">
+          <div className="mt-6 bg-card rounded-lg p-4 flex items-center border border-border">
             <div className="flex-shrink-0 mr-4">
-              <div className="bg-red-500 dark:bg-red-300 p-2 rounded-md">
+              <div className="bg-red-500 dark:bg-red-600 p-2 rounded-md">
                 <svg
                   width="24"
                   height="24"
@@ -801,13 +786,13 @@ export function Account() {
             </div>
             <div className="flex-1">
               <h3 className="font-bold">LIT ID Card</h3>
-              <p className="text-sm text-zinc-800 dark:text-zinc-300">
+              <p className="text-sm text-muted-foreground">
                 Carry your identity as a creator, innovator, and learner
                 wherever you go.
               </p>
             </div>
             <Button
-              className="bg-violet-600 dark:bg-violet-300 hover:bg-violet-700 text-white"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
               onClick={handleDownloadClick}
               disabled={isSubmitting}
             >

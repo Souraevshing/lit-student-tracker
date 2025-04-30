@@ -1,13 +1,25 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -31,35 +43,46 @@ type ApplicationStatus = {
   timeline: TimelineStep[];
 };
 
-type User = {
-  email: string;
-  password: string;
-  name: string;
-  age: string;
-  gender: string;
-  qualification: string;
-  courseChoice:
-    | "creator-marketer"
-    | "creatorpreneur"
-    | "next-gen-business"
-    | "";
-};
+const formSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email address" }),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters long" })
+    .regex(/[A-Z]/, {
+      message: "Password must contain at least one uppercase letter",
+    })
+    .regex(/[a-z]/, {
+      message: "Password must contain at least one lowercase letter",
+    })
+    .regex(/[0-9]/, { message: "Password must contain at least one number" }),
+  name: z
+    .string()
+    .min(2, { message: "Name must be at least 2 characters long" }),
+  age: z
+    .string()
+    .refine((val) => !isNaN(Number(val)), { message: "Age must be a number" })
+    .refine((val) => Number(val) >= 16 && Number(val) <= 100, {
+      message: "Age must be between 16 and 100",
+    }),
+  gender: z.enum(["male", "female", "other"], {
+    required_error: "Please select a gender",
+  }),
+  qualification: z.enum(["high-school", "bachelors", "masters", "phd"], {
+    required_error: "Please select a qualification",
+  }),
+  courseChoice: z.enum(
+    ["creator-marketer", "creatorpreneur", "next-gen-business"],
+    {
+      required_error: "Please select a course",
+    }
+  ),
+});
 
-const defaultUser: User = {
-  email: "",
-  password: "",
-  name: "",
-  age: "",
-  gender: "",
-  qualification: "",
-  courseChoice: "",
-};
+type FormValues = z.infer<typeof formSchema>;
 
 export default function AdmissionPage() {
-  const [user, setUser] = useState<User>(defaultUser);
   const [statusData, setStatusData] = useState<ApplicationStatus | null>(null);
   const [taskFile, setTaskFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
   const [statusLoading, setStatusLoading] = useState(true);
   const [taskLoading, setTaskLoading] = useState(false);
   const [paymentLoading, setPaymentLoading] = useState(false);
@@ -70,26 +93,28 @@ export default function AdmissionPage() {
     "next-gen-business": { price: 1599, name: "Next Gen Business" },
   });
 
-  const handleRegister = async () => {
-    if (
-      !user.email ||
-      !user.password ||
-      !user.name ||
-      !user.age ||
-      !user.gender ||
-      !user.qualification ||
-      !user.courseChoice
-    ) {
-      toast.error("All fields are required");
-      return;
-    }
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      name: "",
+      age: "",
+      gender: undefined,
+      qualification: undefined,
+      courseChoice: undefined,
+    },
+  });
 
-    setLoading(true);
+  const { formState } = form;
+  const { isSubmitting } = formState;
+
+  const onSubmit = async (data: FormValues) => {
     try {
-      const res = await fetch("/api/register", {
+      const res = await fetch("/api/admission/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(user),
+        body: JSON.stringify(data),
       });
 
       if (!res.ok) {
@@ -99,15 +124,13 @@ export default function AdmissionPage() {
 
       toast.success("Registered successfully!");
 
-      const data = await res.json();
-      if (data.user) {
+      const responseData = await res.json();
+      if (responseData.user) {
         window.location.href = "/payment";
       }
     } catch (err) {
       console.error(err);
       toast.error(err instanceof Error ? err.message : "Registration failed");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -172,9 +195,10 @@ export default function AdmissionPage() {
 
     setPaymentLoading(true);
     try {
+      const courseChoice = form.getValues("courseChoice");
       const coursePrice =
-        user.courseChoice && courseDetails[user.courseChoice]
-          ? courseDetails[user.courseChoice].price
+        courseChoice && courseDetails[courseChoice]
+          ? courseDetails[courseChoice].price
           : 1499;
 
       const response = await fetch("/api/payment/create-checkout", {
@@ -184,7 +208,7 @@ export default function AdmissionPage() {
         },
         body: JSON.stringify({
           amount: coursePrice,
-          courseId: user.courseChoice || "default-course",
+          courseId: courseChoice || "default-course",
         }),
       });
 
@@ -220,12 +244,6 @@ export default function AdmissionPage() {
     fetchStatus();
   }, []);
 
-  const formattedStatus = statusData?.status
-    ? formatApplicationStatus(statusData.status)
-    : "Pending";
-
-  console.log(formattedStatus);
-
   const formatDate = (dateString: string): string => {
     try {
       const date = new Date(dateString);
@@ -244,129 +262,183 @@ export default function AdmissionPage() {
           <CardHeader>
             <CardTitle>Register</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Email"
-                value={user.email}
-                onChange={(e) => setUser({ ...user, email: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Password"
-                value={user.password}
-                onChange={(e) => setUser({ ...user, password: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-                id="name"
-                placeholder="Full Name"
-                value={user.name}
-                onChange={(e) => setUser({ ...user, name: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="age">Age</Label>
-              <Input
-                id="age"
-                type="number"
-                placeholder="Age"
-                value={user.age}
-                onChange={(e) => setUser({ ...user, age: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="gender">Gender</Label>
-              <Select
-                value={user.gender}
-                onValueChange={(value) => setUser({ ...user, gender: value })}
+          <CardContent>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
               >
-                <SelectTrigger id="gender">
-                  <SelectValue placeholder="Select Gender" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="male">Male</SelectItem>
-                  <SelectItem value="female">Female</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <div className="space-y-2">
-              <Label htmlFor="qualification">Qualification</Label>
-              <Select
-                value={user.qualification}
-                onValueChange={(value) =>
-                  setUser({ ...user, qualification: value })
-                }
-              >
-                <SelectTrigger id="qualification">
-                  <SelectValue placeholder="Select Qualification" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="high-school">High School</SelectItem>
-                  <SelectItem value="bachelors">
-                    Bachelor&apos;s Degree
-                  </SelectItem>
-                  <SelectItem value="masters">Master&apos;s Degree</SelectItem>
-                  <SelectItem value="phd">PhD</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="Password"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Must be at least 8 characters with uppercase, lowercase,
+                        and numbers.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <div className="space-y-2">
-              <Label htmlFor="courseChoice">Course Choice</Label>
-              <Select
-                value={user.courseChoice}
-                onValueChange={(value) =>
-                  setUser({
-                    ...user,
-                    courseChoice: value as User["courseChoice"],
-                  })
-                }
-              >
-                <SelectTrigger id="courseChoice">
-                  <SelectValue placeholder="Select Course" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="creator-marketer">
-                    Creator Marketer
-                  </SelectItem>
-                  <SelectItem value="creatorpreneur">Creatorpreneur</SelectItem>
-                  <SelectItem value="next-gen-business">
-                    Next Gen Business
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Full Name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <Button
-              style={{ width: "100% !important" }}
-              onClick={handleRegister}
-              className="w-full bg-blue-600 hover:bg-blue-700"
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <LoadingSpinner size="sm" className="mr-2" /> Registering...
-                </>
-              ) : (
-                "Register"
-              )}
-            </Button>
+                <FormField
+                  control={form.control}
+                  name="age"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Age</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="Age" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="gender"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Gender</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Gender" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="male">Male</SelectItem>
+                          <SelectItem value="female">Female</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="qualification"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Qualification</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Qualification" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="high-school">
+                            High School
+                          </SelectItem>
+                          <SelectItem value="bachelors">
+                            Bachelor&apos;s Degree
+                          </SelectItem>
+                          <SelectItem value="masters">
+                            Master&apos;s Degree
+                          </SelectItem>
+                          <SelectItem value="phd">PhD</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="courseChoice"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Course Choice</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Course" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="creator-marketer">
+                            Creator Marketer
+                          </SelectItem>
+                          <SelectItem value="creatorpreneur">
+                            Creatorpreneur
+                          </SelectItem>
+                          <SelectItem value="next-gen-business">
+                            Next Gen Business
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button
+                  type="submit"
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <LoadingSpinner size="sm" className="mr-2" />{" "}
+                      Registering...
+                    </>
+                  ) : (
+                    "Register"
+                  )}
+                </Button>
+              </form>
+            </Form>
           </CardContent>
         </Card>
 
@@ -423,50 +495,50 @@ export default function AdmissionPage() {
           </Card>
 
           {statusData?.status?.toLowerCase() === "registered" ||
-            statusData?.status?.toLowerCase() === "task" ||
-            (statusData?.status?.toLowerCase() === "task-required" && (
-              <Card className="bg-white dark:bg-gray-800">
-                <CardHeader>
-                  <CardTitle>Submit Task</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="taskFile">Upload Task File</Label>
-                    <Input
-                      id="taskFile"
-                      type="file"
-                      onChange={(e) => {
-                        if (e.target.files?.[0]) {
-                          setTaskFile(e.target.files[0]);
-                        }
-                      }}
-                    />
-                    <p className="text-sm text-gray-500 dark:text-gray-300">
-                      Upload your completed task as a PDF or ZIP file.
-                    </p>
-                  </div>
+          statusData?.status?.toLowerCase() === "task" ||
+          statusData?.status?.toLowerCase() === "task-required" ? (
+            <Card className="bg-white dark:bg-gray-800">
+              <CardHeader>
+                <CardTitle>Submit Task</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="taskFile">Upload Task File</Label>
+                  <Input
+                    id="taskFile"
+                    type="file"
+                    onChange={(e) => {
+                      if (e.target.files?.[0]) {
+                        setTaskFile(e.target.files[0]);
+                      }
+                    }}
+                  />
+                  <p className="text-sm text-gray-500 dark:text-gray-300">
+                    Upload your completed task as a PDF or ZIP file.
+                  </p>
+                </div>
 
-                  <Button
-                    onClick={submitTask}
-                    className="w-full bg-green-600 hover:bg-green-700"
-                    disabled={taskLoading || !taskFile}
-                  >
-                    {taskLoading ? (
-                      <>
-                        <LoadingSpinner size="sm" className="mr-2" />{" "}
-                        Submitting...
-                      </>
-                    ) : (
-                      "Submit Task"
-                    )}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+                <Button
+                  onClick={submitTask}
+                  className="w-full bg-green-600 hover:bg-green-700"
+                  disabled={taskLoading || !taskFile}
+                >
+                  {taskLoading ? (
+                    <>
+                      <LoadingSpinner size="sm" className="mr-2" />{" "}
+                      Submitting...
+                    </>
+                  ) : (
+                    "Submit Task"
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
+          ) : null}
 
-          {(statusData?.status?.toLowerCase() === "accepted" ||
-            statusData?.status?.toLowerCase() === "payment" ||
-            statusData?.status?.toLowerCase() === "payment-required") && (
+          {statusData?.status?.toLowerCase() === "accepted" ||
+          statusData?.status?.toLowerCase() === "payment" ||
+          statusData?.status?.toLowerCase() === "payment-required" ? (
             <Card className="bg-white dark:bg-gray-800">
               <CardHeader>
                 <CardTitle>Proceed to Payment</CardTitle>
@@ -485,8 +557,9 @@ export default function AdmissionPage() {
                     <div className="flex justify-between">
                       <span>Course:</span>
                       <span className="font-medium">
-                        {user.courseChoice && courseDetails[user.courseChoice]
-                          ? courseDetails[user.courseChoice].name
+                        {form.getValues("courseChoice") &&
+                        courseDetails[form.getValues("courseChoice")]
+                          ? courseDetails[form.getValues("courseChoice")].name
                           : "Selected Course"}
                       </span>
                     </div>
@@ -494,8 +567,9 @@ export default function AdmissionPage() {
                       <span>Price:</span>
                       <span className="font-medium">
                         ₹
-                        {user.courseChoice && courseDetails[user.courseChoice]
-                          ? courseDetails[user.courseChoice].price
+                        {form.getValues("courseChoice") &&
+                        courseDetails[form.getValues("courseChoice")]
+                          ? courseDetails[form.getValues("courseChoice")].price
                           : 1499}
                       </span>
                     </div>
@@ -518,7 +592,7 @@ export default function AdmissionPage() {
                 </Button>
               </CardContent>
             </Card>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

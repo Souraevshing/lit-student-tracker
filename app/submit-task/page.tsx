@@ -114,7 +114,7 @@ export default function SubmitTaskPage() {
           </Button>
         </Link>
         <h1 className="text-2xl font-bold flex items-center text-foreground">
-          <FileTextIcon className="w-6 h-6 mr-2 text-blue-600" />
+          <FileTextIcon className="w-6 h-6 mr-2 text-primary" />
           Submit Task
         </h1>
       </div>
@@ -136,8 +136,8 @@ export default function SubmitTaskPage() {
                 {userCourse || "your course"}.
               </p>
             </div>
-            <div className="bg-amber-100 dark:bg-amber-200/10 border border-amber-300 dark:border-amber-400/20 rounded-md p-4">
-              <p className="text-amber-800 dark:text-amber-300">
+            <div className="bg-amber-50/50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/30 rounded-md p-4">
+              <p className="text-amber-800 dark:text-amber-400">
                 <strong>Deadline:</strong> Within 7 days of application
               </p>
             </div>
@@ -192,7 +192,7 @@ export default function SubmitTaskPage() {
             <Button
               type="submit"
               disabled={(!taskDescription && !taskLink) || loading}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               {loading ? (
                 <>
