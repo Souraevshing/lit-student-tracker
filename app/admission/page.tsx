@@ -236,11 +236,11 @@ export default function AdmissionPage() {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-4xl">
+    <div className="container mx-auto py-8 px-4 max-w-4xl text-gray-900 dark:text-gray-100">
       <h1 className="text-3xl font-bold mb-6">Admission Portal</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="w-full">
+        <Card className="w-full bg-white dark:bg-gray-800">
           <CardHeader>
             <CardTitle>Register</CardTitle>
           </CardHeader>
@@ -371,7 +371,7 @@ export default function AdmissionPage() {
         </Card>
 
         <div className="space-y-6">
-          <Card>
+          <Card className="bg-white dark:bg-gray-800">
             <CardHeader>
               <CardTitle>Application Status</CardTitle>
             </CardHeader>
@@ -391,23 +391,23 @@ export default function AdmissionPage() {
 
                   <div className="space-y-2">
                     <h3 className="font-medium">Timeline</h3>
-                    <div className="border rounded-md p-4 bg-gray-50">
+                    <div className="border rounded-md p-4 bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
                       {statusData.timeline && statusData.timeline.length > 0 ? (
-                        <ol className="relative border-l border-gray-300 ml-3 space-y-4">
+                        <ol className="relative border-l border-gray-300 dark:border-gray-500 ml-3 space-y-4">
                           {statusData.timeline.map((step, idx) => (
                             <li key={idx} className="mb-4 ml-6">
-                              <span className="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -left-3 ring-8 ring-white">
-                                <CalendarIcon className="w-3 h-3 text-blue-600" />
+                              <span className="absolute flex items-center justify-center w-6 h-6 bg-blue-100 dark:bg-blue-900 rounded-full -left-3 ring-8 ring-white dark:ring-gray-800">
+                                <CalendarIcon className="w-3 h-3 text-blue-600 dark:text-blue-300" />
                               </span>
                               <h3 className="font-medium">{step.step}</h3>
-                              <p className="text-sm text-gray-500">
+                              <p className="text-sm text-gray-500 dark:text-gray-300">
                                 {formatDate(step.date)}
                               </p>
                             </li>
                           ))}
                         </ol>
                       ) : (
-                        <p className="text-gray-500 text-sm">
+                        <p className="text-gray-500 text-sm dark:text-gray-400">
                           No timeline events yet.
                         </p>
                       )}
@@ -415,7 +415,7 @@ export default function AdmissionPage() {
                   </div>
                 </div>
               ) : (
-                <p className="text-gray-500 text-center py-4">
+                <p className="text-gray-500 text-center py-4 dark:text-gray-400">
                   No application data available.
                 </p>
               )}
@@ -425,7 +425,7 @@ export default function AdmissionPage() {
           {statusData?.status?.toLowerCase() === "registered" ||
             statusData?.status?.toLowerCase() === "task" ||
             (statusData?.status?.toLowerCase() === "task-required" && (
-              <Card>
+              <Card className="bg-white dark:bg-gray-800">
                 <CardHeader>
                   <CardTitle>Submit Task</CardTitle>
                 </CardHeader>
@@ -441,7 +441,7 @@ export default function AdmissionPage() {
                         }
                       }}
                     />
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 dark:text-gray-300">
                       Upload your completed task as a PDF or ZIP file.
                     </p>
                   </div>
@@ -467,18 +467,18 @@ export default function AdmissionPage() {
           {(statusData?.status?.toLowerCase() === "accepted" ||
             statusData?.status?.toLowerCase() === "payment" ||
             statusData?.status?.toLowerCase() === "payment-required") && (
-            <Card>
+            <Card className="bg-white dark:bg-gray-800">
               <CardHeader>
                 <CardTitle>Proceed to Payment</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-gray-700">
+                <p className="text-gray-700 dark:text-gray-300">
                   Your application has been accepted! Complete your payment to
                   secure your spot.
                 </p>
 
-                <div className="bg-blue-50 p-4 rounded-md">
-                  <h3 className="font-medium text-blue-800 mb-2">
+                <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-md">
+                  <h3 className="font-medium text-blue-800 dark:text-blue-300 mb-2">
                     Course Details
                   </h3>
                   <div className="space-y-2">

@@ -69,12 +69,12 @@ export function IdCard({
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden bg-zinc-900 border-zinc-800">
-        <div className="relative">
+      <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden bg-white border border-gray-900 dark:bg-zinc-200">
+        <div className="relative perspective-normal w-full h-[350px]">
           <Button
             variant="ghost"
             size="icon"
-            className="absolute right-2 top-2 z-10 text-zinc-400 hover:text-white hover:bg-zinc-800"
+            className="absolute right-2 top-2 z-10 text-white bg-zinc-800 dark:bg-zinc-300"
             onClick={onClose}
           >
             <X className="h-4 w-4" />
@@ -85,7 +85,7 @@ export function IdCard({
               {/* ID Card Design - Front */}
               <div
                 id="id-card-front"
-                className="flex-1 bg-zinc-800 rounded-lg overflow-hidden border border-zinc-700"
+                className="flex-1 bg-zinc-800 dark:bg-zinc-300 rounded-lg overflow-hidden border border-zinc-700"
                 style={{ width: "300px", maxWidth: "100%" }}
               >
                 <div className="bg-blue-600 text-white p-4 flex justify-between items-center">
@@ -103,7 +103,7 @@ export function IdCard({
                           className="object-cover"
                           crossOrigin="anonymous"
                         />
-                        <AvatarFallback className="text-xl h-full w-full bg-zinc-600">
+                        <AvatarFallback className="text-xl h-full w-full bg-zinc-600 dark:bg-gray-200">
                           {userData.fullName
                             .split(" ")
                             .map((n) => n[0])
@@ -114,13 +114,13 @@ export function IdCard({
 
                     <div className="flex-1">
                       <h3 className="font-bold text-lg">{userData.fullName}</h3>
-                      <p className="text-sm text-zinc-400">
+                      <p className="text-sm dark:text-zinc-800 text-zinc-200">
                         {userData.institute} • {studentId.substring(3, 7)}
                       </p>
                       <p className="text-sm mt-2">{userData.email}</p>
                       <p className="text-sm">{userData.contact}</p>
 
-                      <div className="mt-4 text-xs text-zinc-400">
+                      <div className="mt-4 text-xs dark:text-zinc-800 text-zinc-300">
                         <p className="flex justify-between">
                           <span>Date of Birth:</span>
                           <span>{formatDate(userData.dob)}</span>
@@ -143,19 +143,19 @@ export function IdCard({
                   </div>
 
                   <div className="mt-4 text-xs">
-                    <p className="text-zinc-400">
+                    <p className="dark:text-zinc-300 text-zinc-600">
                       <span className="font-medium">Address:</span> 123 Main
                       Street, City, State, 302016
                     </p>
                   </div>
 
-                  <div className="mt-4 flex justify-between text-xs text-zinc-400">
+                  <div className="mt-4 flex justify-between text-xs dark:text-zinc-400 text-zinc-800">
                     <p>Issued On: {issueDate}</p>
                     <p>Expiry Date: {expiryDate}</p>
                   </div>
 
-                  <div className="mt-4 pt-4 border-t border-zinc-700 text-center">
-                    <p className="text-xs text-zinc-400">
+                  <div className="mt-4 pt-4 border-t border-zinc-800 dark:border-zinc-300 text-center">
+                    <p className="text-xs dark:text-zinc-400 text-zinc-800">
                       The LIT School Learn * Innovate * Transform
                     </p>
                     <p className="text-xs text-zinc-400">
@@ -171,12 +171,15 @@ export function IdCard({
                 className="absolute left-[-9999px] top-0"
                 style={{ width: "300px", height: "auto", overflow: "hidden" }}
               >
-                <div className="bg-zinc-800 rounded-lg overflow-hidden border border-zinc-700 p-4">
+                <div className="bg-zinc-800 dark:bg-zinc-300 rounded-lg overflow-hidden border border-zinc-700 p-4">
                   <div className="border-b border-zinc-700 pb-4 mb-4">
                     <h3 className="font-bold text-center mb-2">
                       TERMS AND CONDITIONS
                     </h3>
-                    <ol className="text-xs text-zinc-400 space-y-2 list-decimal pl-4">
+                    <ol
+                      className="text-xs dark:text-zinc-400 text-zinc-800
+                    space-y-2 list-decimal pl-4"
+                    >
                       <li>
                         This card is the property of LIT School and must be
                         returned upon request.
@@ -201,7 +204,7 @@ export function IdCard({
                     <h4 className="font-medium text-sm mb-2">
                       Emergency Contacts:
                     </h4>
-                    <div className="text-xs text-zinc-400 space-y-1">
+                    <div className="text-xs dark:text-zinc-800 text-zinc-300 space-y-1">
                       <p>Campus Security: +91 98765 43210</p>
                       <p>Medical Emergency: +91 98765 12345</p>
                       <p>Administration: +91 98765 67890</p>
@@ -209,7 +212,7 @@ export function IdCard({
                   </div>
 
                   <div className="flex justify-between items-center">
-                    <div className="text-xs text-zinc-400">
+                    <div className="text-xs dark:text-zinc-800 text-zinc-300">
                       <p>Card ID: {studentId}</p>
                       <p>Student ID: {studentId.substring(3, 7)}</p>
                       <p>
@@ -222,8 +225,8 @@ export function IdCard({
                           : ""}
                       </p>
                     </div>
-                    <div className="w-20 h-20 bg-zinc-700 flex items-center justify-center">
-                      <QrCode className="h-12 w-12 text-zinc-400" />
+                    <div className="w-20 h-20 bg-zinc-700 dark:bg-zinc-300 flex items-center justify-center">
+                      <QrCode className="h-12 w-12 dark:text-zinc-400 text-zinc-800" />
                     </div>
                   </div>
                 </div>
@@ -249,7 +252,7 @@ export function IdCard({
                       : "Download as PDF"}
                   </Button>
 
-                  <div className="text-xs text-zinc-400">
+                  <div className="text-xs dark:text-zinc-400 text-zinc-800">
                     <p>• Card ID: {studentId}</p>
                     <p>• Valid until: {expiryDate}</p>
                     <p>• Contains your personal and academic information</p>

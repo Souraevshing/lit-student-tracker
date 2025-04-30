@@ -7,39 +7,38 @@ import {
   XIcon,
 } from "lucide-react";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
+import type React from "react";
 import { Toaster } from "sonner";
 
+import { Providers as SessionProvider } from "@/app/providers/session-provider";
+import { ThemeProvider } from "@/app/providers/theme-provider";
 import "./globals.css";
-import { Providers } from "./providers/session-provider";
-import { ThemeProvider } from "./providers/theme-provider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "LIT -  Student Management",
-  description: "Manage students timeline, schedule interviews and many more.",
+  title: "Student Application Tracker",
+  description:
+    "Track your application status and get assistance from our AI chatbot",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <Providers>
+      <body className={geistMono.className}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+          themes={["light", "dark"]}
+        >
+          <SessionProvider>{children}</SessionProvider>
           <Toaster
             richColors
             duration={4000}
@@ -54,14 +53,17 @@ export default function RootLayout({
               style: {
                 borderRadius: "8px",
                 padding: "12px 16px",
-                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                border: "1px solid rgba(0, 0, 0, 0.06)",
+                boxShadow: "var(--shadow-md)",
+                border: "1px solid var(--border)",
               },
               classNames: {
-                success: "bg-green-50 text-green-800 border-green-200",
-                error: "bg-red-50 text-red-800 border-red-200",
-                warning: "bg-amber-50 text-amber-800 border-amber-200",
-                info: "bg-blue-50 text-blue-800 border-blue-200",
+                success:
+                  "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800",
+                error:
+                  "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800",
+                warning:
+                  "bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800",
+                info: "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800",
               },
             }}
             expand
@@ -73,25 +75,25 @@ export default function RootLayout({
               close: (
                 <XIcon className="w-4 h-4 opacity-70 hover:opacity-100 transition-opacity" />
               ),
-              error: <BanIcon className="w-5 h-5 text-red-600" />,
-              info: <InfoIcon className="w-5 h-5 text-blue-600" />,
-              loading: (
-                <LoaderIcon className="w-5 h-5 text-gray-600 animate-spin" />
+              error: (
+                <BanIcon className="w-5 h-5 text-red-600 dark:text-red-400" />
               ),
-              success: <BadgeCheckIcon className="w-5 h-5 text-green-600" />,
-              warning: <TriangleAlert className="w-5 h-5 text-amber-600" />,
+              info: (
+                <InfoIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              ),
+              loading: (
+                <LoaderIcon className="w-5 h-5 text-foreground animate-spin" />
+              ),
+              success: (
+                <BadgeCheckIcon className="w-5 h-5 text-green-600 dark:text-green-400" />
+              ),
+              warning: (
+                <TriangleAlert className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              ),
             }}
             theme="system"
           />
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
-        </Providers>
+        </ThemeProvider>
       </body>
     </html>
   );

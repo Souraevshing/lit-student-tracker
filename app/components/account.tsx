@@ -773,9 +773,9 @@ export function Account() {
           </Form>
 
           {/* ID Card Section */}
-          <div className="mt-6 bg-zinc-800 rounded-lg p-4 flex items-center">
+          <div className="mt-6 bg-foreground rounded-lg p-4 flex items-center">
             <div className="flex-shrink-0 mr-4">
-              <div className="bg-red-500 p-2 rounded-md">
+              <div className="bg-red-500 dark:bg-red-300 p-2 rounded-md">
                 <svg
                   width="24"
                   height="24"
@@ -801,13 +801,13 @@ export function Account() {
             </div>
             <div className="flex-1">
               <h3 className="font-bold">LIT ID Card</h3>
-              <p className="text-sm text-zinc-400">
+              <p className="text-sm text-zinc-800 dark:text-zinc-300">
                 Carry your identity as a creator, innovator, and learner
                 wherever you go.
               </p>
             </div>
             <Button
-              className="bg-violet-600 hover:bg-violet-700 text-white"
+              className="bg-violet-600 dark:bg-violet-300 hover:bg-violet-700 text-white"
               onClick={handleDownloadClick}
               disabled={isSubmitting}
             >
