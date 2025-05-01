@@ -2,7 +2,6 @@
 
 import { Download, QrCode, X } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -22,6 +21,7 @@ export function IdCard({
   onDownload,
   isDownloading = false,
 }: IdCardProps) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isGenerating, setIsGenerating] = useState(false);
 
   const formatDate = (date: Date | string) => {
@@ -55,22 +55,10 @@ export function IdCard({
     .map((n) => n[0])
     .join("")}${Math.floor(1000 + Math.random() * 9000)}`;
 
-  const handleDownload = async () => {
-    try {
-      setIsGenerating(true);
-      await onDownload();
-    } catch (error) {
-      console.error("Download error:", error);
-      toast("Download failed");
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
   return (
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden bg-background border border-border">
-        <div className="relative perspective-normal w-full h-[350px]">
+        <div className="relative perspective-normal w-full">
           <Button
             variant="ghost"
             size="icon"
@@ -248,7 +236,7 @@ export function IdCard({
                 <div className="mt-auto space-y-3">
                   <Button
                     className="w-full bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2"
-                    onClick={handleDownload}
+                    onClick={onDownload}
                     disabled={isGenerating || isDownloading}
                   >
                     <Download className="h-4 w-4" />

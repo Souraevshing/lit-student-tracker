@@ -91,8 +91,9 @@ export function Account() {
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      toast.success("Profile updated successfully");
+      // Reset form changed state before showing the ID card
       setFormChanged(false);
+      toast.success("Profile updated successfully");
 
       setShowIdCard(true);
     } catch (error) {
